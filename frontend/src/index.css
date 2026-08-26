@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --color-razorpay-blue: #02042b;
+  --color-razorpay-primary: #3385ff;
+}
+
+body {
+  background-color: #f9f9f9;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}

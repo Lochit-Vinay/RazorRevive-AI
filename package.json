@@ -1,0 +1,16 @@
+{
+  "name": "ai-revenue-recovery",
+  "version": "1.0.0",
+  "description": "AI Payment Revenue Recovery Agent",
+  "scripts": {
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "db:migrate": "cd backend && npx prisma migrate dev",
+    "db:seed": "cd backend && npx ts-node prisma/seed.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
