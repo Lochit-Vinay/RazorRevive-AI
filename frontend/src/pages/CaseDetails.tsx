@@ -92,6 +92,12 @@ export default function CaseDetails() {
               Successfully Recovered
             </div>
           )}
+          {data.status === 'FAILED' && (
+            <div className="bg-red-100 text-red-800 px-5 py-2.5 rounded-lg font-bold flex items-center border border-red-200">
+              <XCircle className="w-5 h-5 mr-2" />
+              Recovery Failed
+            </div>
+          )}
         </div>
       </div>
 
@@ -186,6 +192,7 @@ export default function CaseDetails() {
           {ai && (
             <RecoveryActionPanel 
               caseId={data.id}
+              caseStatus={data.status}
               aiDecision={ai}
               guardrail={guardrail}
               recoveryAction={data.recoveryActions?.[0]}

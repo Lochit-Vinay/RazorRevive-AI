@@ -4,6 +4,7 @@ import api from '../../lib/api';
 
 interface Props {
   caseId: string;
+  caseStatus: string;
   aiDecision: any;
   guardrail: any;
   recoveryAction: any;
@@ -11,7 +12,7 @@ interface Props {
   onRefresh: () => void;
 }
 
-export default function RecoveryActionPanel({ caseId, aiDecision, guardrail, recoveryAction, payment, onRefresh }: Props) {
+export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, guardrail, recoveryAction, payment, onRefresh }: Props) {
   const [showPreview, setShowPreview] = useState(false);
   const [showExecute, setShowExecute] = useState(false);
   const [executing, setExecuting] = useState(false);
@@ -20,8 +21,8 @@ export default function RecoveryActionPanel({ caseId, aiDecision, guardrail, rec
   if (!aiDecision) return null;
 
   const isBlocked = guardrail?.status === 'BLOCKED';
-  const isExecuted = !!recoveryAction;
-  const canExecute = !isBlocked && !isExecuted && guardrail?.status === 'ALLOWED';
+  const isExecuted = !!recoveryAction || caseStatus !== 'PENDING';
+  const canExecute = caseStatus === 'PENDING' && !isBlocked && guardrail?.status === 'ALLOWED' && !recoveryAction;
 
   const handleExecute = async () => {
     setExecuting(true);

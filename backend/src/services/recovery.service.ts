@@ -79,6 +79,10 @@ export class RecoveryEngine {
 
     // 3. Execute allowed action
     if (aiDecision.recommendedAction === 'NO_ACTION') {
+      await prisma.recoveryCase.update({
+        where: { id: caseId },
+        data: { status: 'FAILED' }
+      });
       return;
     }
 
@@ -136,7 +140,27 @@ export class RecoveryEngine {
     if (!aiDecision || !guardrail) throw new Error('Case must be analyzed first');
     if (guardrail.status !== 'ALLOWED') throw new Error('Action blocked by guardrails');
 
-    if (aiDecision.recommendedAction === 'NO_ACTION' || aiDecision.recommendedAction === 'ESCALATE') {
+    if (aiDecision.recommendedAction === 'NO_ACTION') {
+      await prisma.recoveryCase.update({
+        where: { id: caseId },
+        data: { status: 'FAILED' } // NO_ACTION means we give up or it's already done
+      });
+      return;
+    }
+    
+    if (aiDecision.recommendedAction === 'ESCALATE') {
+      await prisma.recoveryCase.update({
+        where: { id: caseId },
+        data: { status: 'ESCALATED' }
+      });
+      await prisma.auditLog.create({
+        data: {
+          recoveryCaseId: caseId,
+          eventType: 'ACTION_EXECUTED',
+          actor: 'SYSTEM',
+          metadata: JSON.stringify({ actionType: 'ESCALATE' })
+        }
+      });
       return;
     }
 

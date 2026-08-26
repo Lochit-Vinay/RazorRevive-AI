@@ -76,14 +76,19 @@ export class SimulationService {
         });
       }
     } else if (outcome === 'FAILED') {
-       await prisma.auditLog.create({
-          data: {
-            recoveryCaseId,
-            eventType: 'PAYMENT_RECOVERY_FAILED',
-            actor: 'SYSTEM',
-            metadata: JSON.stringify({ actionId, outcome })
-          }
-        });
+      await prisma.recoveryCase.update({
+        where: { id: recoveryCaseId },
+        data: { status: 'FAILED' }
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          recoveryCaseId,
+          eventType: 'PAYMENT_RECOVERY_FAILED',
+          actor: 'SYSTEM',
+          metadata: JSON.stringify({ actionId, outcome })
+        }
+      });
     }
   }
 }
