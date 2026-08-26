@@ -3,46 +3,112 @@ import { prisma } from '../db';
 
 export const getDashboardMetrics = async (req: Request, res: Response) => {
   try {
-    // Total Revenue at Risk (Pending & Escalated cases)
-    const casesAtRisk = await prisma.recoveryCase.findMany({
-      where: { status: { in: ['PENDING', 'ESCALATED'] } }
+    const range = (req.query.range as string) || 'all';
+    
+    const now = new Date();
+    let currentStartDate: Date | null = null;
+    let previousStartDate: Date | null = null;
+
+    if (range === '24h') {
+      currentStartDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      previousStartDate = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+    } else if (range === '7d') {
+      currentStartDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      previousStartDate = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    } else if (range === '30d') {
+      currentStartDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      previousStartDate = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+    }
+
+    const currentPeriodFilter = currentStartDate ? { createdAt: { gte: currentStartDate } } : {};
+    const previousPeriodFilter = previousStartDate && currentStartDate 
+      ? { createdAt: { gte: previousStartDate, lt: currentStartDate } } 
+      : null;
+
+    // Helper to get KPIs for a given period filter
+    const getKPIs = async (filter: any) => {
+      const cases = await prisma.recoveryCase.findMany({ where: filter });
+      const actions = await prisma.recoveryAction.count({ where: filter });
+      const escalations = await prisma.recoveryCase.count({ where: { ...filter, status: 'ESCALATED' } });
+      const guardrailBlocks = await prisma.guardrailEvaluation.count({ where: { ...filter, status: 'BLOCKED' } });
+      
+      let revenueAtRisk = 0;
+      let revenueRecovered = 0;
+      let successfulRecoveries = 0;
+
+      cases.forEach(c => {
+        if (c.status === 'PENDING' || c.status === 'ESCALATED') {
+          revenueAtRisk += c.revenueAtRisk;
+        } else if (c.status === 'RECOVERED') {
+          revenueRecovered += c.revenueAtRisk;
+          successfulRecoveries++;
+        }
+      });
+
+      const recoveryRate = revenueAtRisk + revenueRecovered > 0 
+        ? (revenueRecovered / (revenueAtRisk + revenueRecovered)) * 100 
+        : 0;
+
+      return { revenueAtRisk, revenueRecovered, recoveryRate, recoveryAttempts: actions, escalations, successfulRecoveries, guardrailBlocks };
+    };
+
+    const currentKPIs = await getKPIs(currentPeriodFilter);
+    const previousKPIs = previousPeriodFilter ? await getKPIs(previousPeriodFilter) : null;
+
+    // Funnel Data (for current period)
+    const funnel = {
+      failedPayments: await prisma.paymentFailure.count({ where: currentPeriodFilter }),
+      eligibleCases: await prisma.recoveryCase.count({ where: currentPeriodFilter }),
+      aiRecommendations: await prisma.aiDecision.count({ where: currentPeriodFilter }),
+      guardrailApproved: await prisma.guardrailEvaluation.count({ where: { ...currentPeriodFilter, status: 'ALLOWED' } }),
+      recoveryAttempted: currentKPIs.recoveryAttempts,
+      recovered: currentKPIs.successfulRecoveries
+    };
+
+    // Failure Reasons (for current period)
+    const failures = await prisma.paymentFailure.findMany({
+      where: currentPeriodFilter,
+      include: { payment: true }
     });
-    const revenueAtRisk = casesAtRisk.reduce((acc, c) => acc + c.revenueAtRisk, 0);
-
-    // Total Recovered
-    const recoveredCases = await prisma.recoveryCase.findMany({
-      where: { status: 'RECOVERED' }
-    });
-    const revenueRecovered = recoveredCases.reduce((acc, c) => acc + c.revenueAtRisk, 0);
-
-    // Total Actions attempted
-    const recoveryAttempts = await prisma.recoveryAction.count();
-
-    // Successful Recoveries count
-    const successfulRecoveries = recoveredCases.length;
-
-    // Escalations
-    const escalations = await prisma.recoveryCase.count({
-      where: { status: 'ESCALATED' }
+    
+    const failureReasonMap: Record<string, { count: number, amount: number }> = {};
+    failures.forEach(f => {
+      if (!failureReasonMap[f.reason]) failureReasonMap[f.reason] = { count: 0, amount: 0 };
+      failureReasonMap[f.reason].count += 1;
+      failureReasonMap[f.reason].amount += f.payment.amount;
     });
 
-    // Guardrail Blocks
-    const guardrailBlocks = await prisma.guardrailEvaluation.count({
-      where: { status: 'BLOCKED' }
+    const failureReasons = Object.entries(failureReasonMap)
+      .map(([reason, data]) => ({ reason, ...data }))
+      .sort((a, b) => b.amount - a.amount);
+
+    // Top Cases (Pending, ordered by amount)
+    const topCases = await prisma.recoveryCase.findMany({
+      where: { status: 'PENDING' },
+      orderBy: { revenueAtRisk: 'desc' },
+      take: 5,
+      include: {
+        payment: { include: { customer: true, failures: { take: 1, orderBy: { createdAt: 'desc' } } } },
+        aiDecisions: { take: 1, orderBy: { createdAt: 'desc' } }
+      }
     });
 
-    const recoveryRate = revenueAtRisk + revenueRecovered > 0 
-      ? (revenueRecovered / (revenueAtRisk + revenueRecovered)) * 100 
-      : 0;
+    // Recent Activity
+    const recentActivity = await prisma.auditLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: {
+        recoveryCase: { include: { payment: true } }
+      }
+    });
 
     res.json({
-      revenueAtRisk,
-      revenueRecovered,
-      recoveryRate,
-      recoveryAttempts,
-      successfulRecoveries,
-      escalations,
-      guardrailBlocks,
+      current: currentKPIs,
+      previous: previousKPIs,
+      funnel,
+      failureReasons,
+      topCases,
+      recentActivity,
       totalCases: await prisma.recoveryCase.count()
     });
   } catch (error) {
