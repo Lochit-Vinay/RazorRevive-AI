@@ -7,9 +7,10 @@ import { v4 as uuidv4 } from 'uuid';
 export class RecoveryEngine {
   
   /**
-   * Executes the full pipeline for a single recovery case.
+   * Executes the pipeline for a single recovery case.
+   * If autoExecute is false, it stops after guardrail evaluation.
    */
-  async processRecoveryCase(caseId: string) {
+  async processRecoveryCase(caseId: string, autoExecute: boolean = true) {
     const recoveryCase = await prisma.recoveryCase.findUnique({
       where: { id: caseId }
     });
@@ -71,6 +72,11 @@ export class RecoveryEngine {
       return;
     }
 
+    if (!autoExecute) {
+      // Stop here for manual execution flow
+      return;
+    }
+
     // 3. Execute allowed action
     if (aiDecision.recommendedAction === 'NO_ACTION') {
       return;
@@ -105,6 +111,54 @@ export class RecoveryEngine {
     });
 
     // 4. Simulate Outcome
+    const outcome = await simulationService.simulateRecoveryOutcome(aiDecision.recommendedAction, aiDecision.rootCause);
+    await simulationService.applyOutcome(caseId, action.id, outcome);
+  }
+
+  /**
+   * Manually executes a recovery action for a case that has been analyzed and allowed.
+   */
+  async executeRecoveryCase(caseId: string) {
+    const recoveryCase = await prisma.recoveryCase.findUnique({
+      where: { id: caseId },
+      include: {
+        aiDecisions: { orderBy: { createdAt: 'desc' }, take: 1 },
+        guardrailEvaluations: { orderBy: { createdAt: 'desc' }, take: 1 }
+      }
+    });
+
+    if (!recoveryCase) throw new Error('Recovery case not found');
+    if (recoveryCase.status !== 'PENDING') throw new Error('Case is not pending');
+
+    const aiDecision = recoveryCase.aiDecisions[0];
+    const guardrail = recoveryCase.guardrailEvaluations[0];
+
+    if (!aiDecision || !guardrail) throw new Error('Case must be analyzed first');
+    if (guardrail.status !== 'ALLOWED') throw new Error('Action blocked by guardrails');
+
+    if (aiDecision.recommendedAction === 'NO_ACTION' || aiDecision.recommendedAction === 'ESCALATE') {
+      return;
+    }
+
+    const idempotencyKey = uuidv4();
+    const action = await prisma.recoveryAction.create({
+      data: {
+        recoveryCaseId: caseId,
+        actionType: aiDecision.recommendedAction,
+        status: 'PENDING',
+        idempotencyKey
+      }
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        recoveryCaseId: caseId,
+        eventType: 'RECOVERY_ACTION_EXECUTED',
+        actor: 'SYSTEM',
+        metadata: JSON.stringify({ actionType: aiDecision.recommendedAction, idempotencyKey, amount: recoveryCase.revenueAtRisk })
+      }
+    });
+
     const outcome = await simulationService.simulateRecoveryOutcome(aiDecision.recommendedAction, aiDecision.rootCause);
     await simulationService.applyOutcome(caseId, action.id, outcome);
   }

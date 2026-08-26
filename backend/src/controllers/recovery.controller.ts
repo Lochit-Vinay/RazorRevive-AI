@@ -53,11 +53,22 @@ export const getCaseDetails = async (req: Request, res: Response) => {
 export const analyzeCase = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
-    await recoveryEngine.processRecoveryCase(id);
+    await recoveryEngine.processRecoveryCase(id, false); // false = DO NOT auto-execute
     res.json({ success: true });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ error: error.message || 'Failed to process case' });
+  }
+};
+
+export const executeCase = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    await recoveryEngine.executeRecoveryCase(id);
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({ error: error.message || 'Failed to execute case' });
   }
 };
 

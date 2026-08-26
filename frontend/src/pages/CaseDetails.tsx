@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../lib/api';
 import { ArrowLeft, User, CreditCard, ShieldAlert, Cpu, CheckCircle2, XCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
 import clsx from 'clsx';
+import RecoveryActionPanel from '../components/case/RecoveryActionPanel';
 
 export default function CaseDetails() {
   const { id } = useParams();
@@ -22,7 +23,7 @@ export default function CaseDetails() {
     fetchDetails();
   }, [id]);
 
-  const handleAnalyzeAndExecute = async () => {
+  const handleAnalyze = async () => {
     setProcessing(true);
     try {
       await api.post(`/recovery/analyze/${id}`);
@@ -68,11 +69,11 @@ export default function CaseDetails() {
         <div className="flex space-x-3">
           {data.status === 'PENDING' && (
             <button
-              onClick={handleAnalyzeAndExecute}
-              disabled={processing}
-              className="bg-razorpay-primary hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow-sm font-medium transition-colors disabled:opacity-70"
+              onClick={handleAnalyze}
+              disabled={processing || !!ai}
+              className="bg-razorpay-primary hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow-sm font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {processing ? 'Processing...' : 'Analyze & Recover'}
+              {processing ? 'Processing...' : (ai ? 'Analyzed' : 'Analyze Case')}
             </button>
           )}
           {data.status === 'ESCALATED' && (
@@ -179,6 +180,18 @@ export default function CaseDetails() {
                 )}
               </div>
             </div>
+          )}
+
+          {/* Recovery Action Panel */}
+          {ai && (
+            <RecoveryActionPanel 
+              caseId={data.id}
+              aiDecision={ai}
+              guardrail={guardrail}
+              recoveryAction={data.recoveryActions?.[0]}
+              payment={data.payment}
+              onRefresh={fetchDetails}
+            />
           )}
 
           {/* Audit Trail */}
