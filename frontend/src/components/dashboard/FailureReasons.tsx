@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { FailureReason } from '../../types/dashboard';
 
 interface Props {
@@ -17,7 +17,7 @@ export default function FailureReasons({ reasons }: Props) {
         <p className="text-sm text-gray-500 py-4">No failure data for this period.</p>
       ) : (
         <div className="space-y-5">
-          {reasons.slice(0, 5).map((r, idx) => {
+          {reasons.slice(0, 5).map((r) => {
             const percent = totalAmount > 0 ? (r.amount / totalAmount) * 100 : 0;
             return (
               <div key={r.reason} className="space-y-1">

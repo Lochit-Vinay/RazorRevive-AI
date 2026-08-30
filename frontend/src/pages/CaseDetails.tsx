@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../lib/api';
 import { ArrowLeft, User, CreditCard, ShieldAlert, Cpu, CheckCircle2, XCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
@@ -67,7 +67,7 @@ export default function CaseDetails() {
         </div>
         
         <div className="flex space-x-3">
-          {data.status === 'PENDING' && (
+          {data.status === 'PENDING' && !guardrail && (
             <button
               onClick={handleAnalyze}
               disabled={processing || !!ai}
@@ -76,6 +76,12 @@ export default function CaseDetails() {
               {processing ? 'Processing...' : (ai ? 'Analyzed' : 'Analyze Case')}
             </button>
           )}
+          {data.status === 'PENDING' && guardrail?.status === 'BLOCKED' && (
+            <div className="bg-red-100 text-red-800 px-5 py-2.5 rounded-lg font-bold flex items-center border border-red-200">
+              <ShieldAlert className="w-5 h-5 mr-2" />
+              Blocked by Guardrails
+            </div>
+          )}
           {data.status === 'ESCALATED' && (
             <button
               onClick={handleApproveEscalation}
@@ -83,7 +89,7 @@ export default function CaseDetails() {
               className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-lg shadow-sm font-medium transition-colors disabled:opacity-70 flex items-center"
             >
               <AlertTriangle className="w-4 h-4 mr-2" />
-              {processing ? 'Approving...' : 'Approve Human Exception'}
+              {processing ? 'Approving...' : 'Needs Human Approval - Approve'}
             </button>
           )}
           {data.status === 'RECOVERED' && (
@@ -208,7 +214,7 @@ export default function CaseDetails() {
               Audit Trail
             </h3>
             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
-              {logs.map((log: any, idx: number) => (
+              {logs.map((log: any) => (
                 <div key={log.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                   <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-gray-200 text-gray-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                     <div className="w-2 h-2 rounded-full bg-gray-500"></div>

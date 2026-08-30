@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { PlayCircle, RefreshCw } from 'lucide-react';
 
 interface Props {

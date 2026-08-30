@@ -28,9 +28,16 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     // Helper to get KPIs for a given period filter
     const getKPIs = async (filter: any) => {
       const cases = await prisma.recoveryCase.findMany({ where: filter });
-      const actions = await prisma.recoveryAction.count({ where: filter });
-      const escalations = await prisma.recoveryCase.count({ where: { ...filter, status: 'ESCALATED' } });
-      const guardrailBlocks = await prisma.guardrailEvaluation.count({ where: { ...filter, status: 'BLOCKED' } });
+      const actionsCount = await prisma.recoveryAction.findMany({
+        where: filter,
+        distinct: ['recoveryCaseId']
+      });
+      const escalations = cases.filter(c => c.status === 'ESCALATED').length;
+      
+      const guardrailBlocks = await prisma.guardrailEvaluation.findMany({
+        where: { ...filter, status: 'BLOCKED' },
+        distinct: ['recoveryCaseId']
+      });
       
       let revenueAtRisk = 0;
       let revenueRecovered = 0;
@@ -49,18 +56,28 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
         ? (revenueRecovered / (revenueAtRisk + revenueRecovered)) * 100 
         : 0;
 
-      return { revenueAtRisk, revenueRecovered, recoveryRate, recoveryAttempts: actions, escalations, successfulRecoveries, guardrailBlocks };
+      return { revenueAtRisk, revenueRecovered, recoveryRate, recoveryAttempts: actionsCount.length, escalations, successfulRecoveries, guardrailBlocks: guardrailBlocks.length };
     };
 
     const currentKPIs = await getKPIs(currentPeriodFilter);
     const previousKPIs = previousPeriodFilter ? await getKPIs(previousPeriodFilter) : null;
 
     // Funnel Data (for current period)
+    const distinctAiRecommendations = await prisma.aiDecision.findMany({
+      where: currentPeriodFilter,
+      distinct: ['recoveryCaseId']
+    });
+
+    const distinctGuardrailApproved = await prisma.guardrailEvaluation.findMany({
+      where: { ...currentPeriodFilter, status: 'ALLOWED' },
+      distinct: ['recoveryCaseId']
+    });
+
     const funnel = {
       failedPayments: await prisma.paymentFailure.count({ where: currentPeriodFilter }),
       eligibleCases: await prisma.recoveryCase.count({ where: currentPeriodFilter }),
-      aiRecommendations: await prisma.aiDecision.count({ where: currentPeriodFilter }),
-      guardrailApproved: await prisma.guardrailEvaluation.count({ where: { ...currentPeriodFilter, status: 'ALLOWED' } }),
+      aiRecommendations: distinctAiRecommendations.length,
+      guardrailApproved: distinctGuardrailApproved.length,
       recoveryAttempted: currentKPIs.recoveryAttempts,
       recovered: currentKPIs.successfulRecoveries
     };

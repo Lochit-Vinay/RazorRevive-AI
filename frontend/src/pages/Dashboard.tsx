@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '../lib/api';
 import type { DashboardMetrics } from '../types/dashboard';
 
@@ -43,11 +43,18 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [fetchMetrics]);
 
+  const [simMessage, setSimMessage] = useState<string | null>(null);
+
   const runSimulation = async () => {
     setSimulating(true);
+    setSimMessage(null);
     try {
-      await api.post('/recovery/simulation/run');
+      const resp = await api.post('/recovery/simulation/run');
       await fetchMetrics(true);
+      if (resp.data.message) {
+        setSimMessage(resp.data.message);
+        setTimeout(() => setSimMessage(null), 5000);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -82,6 +89,12 @@ export default function Dashboard() {
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
       
+      {simMessage && (
+        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-sm flex items-center mb-6">
+          <span className="font-medium">{simMessage}</span>
+        </div>
+      )}
+
       <DashboardHeader 
         timeRange={timeRange} 
         setTimeRange={setTimeRange} 

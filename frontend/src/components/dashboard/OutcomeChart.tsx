@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import type { KPI } from '../../types/dashboard';
 
@@ -34,7 +34,7 @@ export default function OutcomeChart({ current }: Props) {
             <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} hide />
             <Tooltip 
               cursor={{ fill: '#f9fafb' }} 
-              formatter={(val: number) => [formatCurrency(val), 'Amount']}
+              formatter={(val: any) => [formatCurrency(val as number), 'Amount']}
               contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
             />
             <Legend verticalAlign="top" height={36} iconType="circle" />

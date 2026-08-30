@@ -12,7 +12,11 @@ export class RecoveryEngine {
    */
   async processRecoveryCase(caseId: string, autoExecute: boolean = true) {
     const recoveryCase = await prisma.recoveryCase.findUnique({
-      where: { id: caseId }
+      where: { id: caseId },
+      include: {
+        aiDecisions: true,
+        guardrailEvaluations: true
+      }
     });
 
     if (!recoveryCase) throw new Error('Recovery case not found');
@@ -21,41 +25,52 @@ export class RecoveryEngine {
       return; // Nothing to do
     }
 
-    // 1. Diagnose (AI)
-    const aiDecision = await aiDecisionEngine.analyzePayment(recoveryCase.paymentId);
-    
-    // Save decision
-    await prisma.aiDecision.create({
-      data: {
-        recoveryCaseId: caseId,
-        ...aiDecision
-      }
-    });
+    // Prevent duplicate analysis
+    let aiDecision;
+    if (recoveryCase.aiDecisions && recoveryCase.aiDecisions.length > 0) {
+      aiDecision = recoveryCase.aiDecisions[0];
+    } else {
+      // 1. Diagnose (AI)
+      aiDecision = await aiDecisionEngine.analyzePayment(recoveryCase.paymentId);
+      
+      // Save decision
+      aiDecision = await prisma.aiDecision.create({
+        data: {
+          recoveryCaseId: caseId,
+          ...aiDecision
+        }
+      });
 
-    await prisma.auditLog.create({
-      data: {
-        recoveryCaseId: caseId,
-        eventType: 'AI_ANALYSIS_COMPLETED',
-        actor: 'AI',
-        metadata: JSON.stringify(aiDecision)
-      }
-    });
+      await prisma.auditLog.create({
+        data: {
+          recoveryCaseId: caseId,
+          eventType: 'AI_ANALYSIS_COMPLETED',
+          actor: 'AI',
+          metadata: JSON.stringify(aiDecision)
+        }
+      });
+    }
 
     // 2. Guardrail
-    const guardrailResult = await guardrailEngine.evaluateAction(caseId, aiDecision);
-    
-    await prisma.guardrailEvaluation.create({
-      data: {
-        recoveryCaseId: caseId,
-        actionType: aiDecision.recommendedAction,
-        status: guardrailResult.status,
-        reason: guardrailResult.reason,
-        rulesChecked: JSON.stringify(guardrailResult.rulesChecked)
-      }
-    });
+    let guardrailResult;
+    if (recoveryCase.guardrailEvaluations && recoveryCase.guardrailEvaluations.length > 0) {
+      guardrailResult = recoveryCase.guardrailEvaluations[0];
+    } else {
+      guardrailResult = await guardrailEngine.evaluateAction(caseId, aiDecision);
+      
+      guardrailResult = await prisma.guardrailEvaluation.create({
+        data: {
+          recoveryCaseId: caseId,
+          actionType: aiDecision.recommendedAction,
+          status: guardrailResult.status,
+          reason: guardrailResult.reason,
+          rulesChecked: JSON.stringify(guardrailResult.rulesChecked)
+        }
+      });
+    }
 
     if (guardrailResult.status === 'BLOCKED') {
-      // If blocked, escalate
+      // Always escalate if blocked to require human approval
       await prisma.recoveryCase.update({
         where: { id: caseId },
         data: { status: 'ESCALATED' }
@@ -127,18 +142,27 @@ export class RecoveryEngine {
       where: { id: caseId },
       include: {
         aiDecisions: { orderBy: { createdAt: 'desc' }, take: 1 },
-        guardrailEvaluations: { orderBy: { createdAt: 'desc' }, take: 1 }
+        guardrailEvaluations: { orderBy: { createdAt: 'desc' }, take: 1 },
+        recoveryActions: true
       }
     });
 
     if (!recoveryCase) throw new Error('Recovery case not found');
     if (recoveryCase.status !== 'PENDING') throw new Error('Case is not pending');
 
-    const aiDecision = recoveryCase.aiDecisions[0];
-    const guardrail = recoveryCase.guardrailEvaluations[0];
+    // Idempotency: prevent duplicate execution if an action is already present
+    if (recoveryCase.recoveryActions.length > 0) {
+      throw new Error('Recovery action already executed for this case');
+    }
 
-    if (!aiDecision || !guardrail) throw new Error('Case must be analyzed first');
-    if (guardrail.status !== 'ALLOWED') throw new Error('Action blocked by guardrails');
+    const aiDecision = recoveryCase.aiDecisions[0];
+    if (!aiDecision) throw new Error('Case must be analyzed first');
+
+    // Re-run deterministic guardrails just before executing
+    const reevaluatedGuardrail = await guardrailEngine.evaluateAction(caseId, aiDecision as any);
+    if (reevaluatedGuardrail.status !== 'ALLOWED') {
+      throw new Error(`Action blocked by guardrails during execution: ${reevaluatedGuardrail.reason}`);
+    }
 
     if (aiDecision.recommendedAction === 'NO_ACTION') {
       await prisma.recoveryCase.update({

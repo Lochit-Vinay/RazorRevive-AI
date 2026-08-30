@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { IndianRupee, Activity, AlertCircle, RefreshCcw, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import type { KPI } from '../../types/dashboard';
 

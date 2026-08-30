@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { RecentActivity as RecentActivityType } from '../../types/dashboard';
 
 interface Props {

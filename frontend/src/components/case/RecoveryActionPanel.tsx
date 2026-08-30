@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PlayCircle, Eye, CheckCircle2, ShieldAlert, Zap, X } from 'lucide-react';
 import api from '../../lib/api';
 
@@ -21,7 +21,7 @@ export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, gu
   if (!aiDecision) return null;
 
   const isBlocked = guardrail?.status === 'BLOCKED';
-  const isExecuted = !!recoveryAction || caseStatus !== 'PENDING';
+  const isExecuted = !!recoveryAction || (caseStatus !== 'PENDING' && caseStatus !== 'ESCALATED');
   const canExecute = caseStatus === 'PENDING' && !isBlocked && guardrail?.status === 'ALLOWED' && !recoveryAction;
 
   const handleExecute = async () => {
@@ -33,6 +33,7 @@ export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, gu
       onRefresh();
     } catch (e: any) {
       console.error(e);
+      setShowExecute(false);
       setError(e.response?.data?.error || 'Failed to execute recovery action.');
     } finally {
       setExecuting(false);

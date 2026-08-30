@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { FunnelData } from '../../types/dashboard';
 import { ArrowDown, AlertTriangle, Cpu, ShieldCheck, Play, CheckCircle2 } from 'lucide-react';
 
