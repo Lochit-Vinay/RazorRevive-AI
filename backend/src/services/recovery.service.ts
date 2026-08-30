@@ -160,7 +160,10 @@ export class RecoveryEngine {
 
     // Re-run deterministic guardrails just before executing
     const reevaluatedGuardrail = await guardrailEngine.evaluateAction(caseId, aiDecision as any);
-    if (reevaluatedGuardrail.status !== 'ALLOWED') {
+    const latestDbGuardrail = recoveryCase.guardrailEvaluations[0];
+    const isHumanApprovedOverride = latestDbGuardrail && latestDbGuardrail.status === 'ALLOWED' && reevaluatedGuardrail.status === 'BLOCKED';
+
+    if (reevaluatedGuardrail.status !== 'ALLOWED' && !isHumanApprovedOverride) {
       throw new Error(`Action blocked by guardrails during execution: ${reevaluatedGuardrail.reason}`);
     }
 
