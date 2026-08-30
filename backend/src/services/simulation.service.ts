@@ -3,31 +3,25 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class SimulationService {
   /**
-   * Simulates the outcome of a recovery action probabilistically.
-   * Do NOT hardcode deterministic outcomes to make the demo realistic.
+   * Simulates the outcome of a recovery action deterministically for demo/testing.
    */
   async simulateRecoveryOutcome(actionType: string, rootCause: string): Promise<'SUCCESS' | 'FAILED' | 'PENDING'> {
-    const rand = Math.random();
-    
     if (actionType === 'RETRY') {
       if (rootCause === 'temporary_network_failure' || rootCause === 'timeout') {
-        return rand < 0.70 ? 'SUCCESS' : 'FAILED';
+        return 'SUCCESS';
       }
-      if (rootCause === 'insufficient_funds') {
-        return rand < 0.15 ? 'SUCCESS' : 'FAILED';
-      }
-      return rand < 0.10 ? 'SUCCESS' : 'FAILED';
+      return 'FAILED';
     }
 
     if (actionType === 'PAYMENT_LINK') {
       if (rootCause === 'expired_card' || rootCause === 'invalid_payment_method') {
-        return rand < 0.55 ? 'SUCCESS' : 'PENDING';
+        return 'PENDING';
       }
-      return rand < 0.35 ? 'SUCCESS' : 'PENDING';
+      return 'SUCCESS';
     }
 
     if (actionType === 'REMINDER') {
-      return rand < 0.30 ? 'SUCCESS' : 'PENDING';
+      return 'PENDING';
     }
 
     if (actionType === 'ESCALATE') {
@@ -38,56 +32,69 @@ export class SimulationService {
   }
 
   /**
-   * Utility to update the payment and recovery case if the simulation results in SUCCESS
+   * Utility to update the payment and recovery case with transaction atomicity
    */
   async applyOutcome(recoveryCaseId: string, actionId: string, outcome: 'SUCCESS' | 'FAILED' | 'PENDING') {
-    await prisma.recoveryAction.update({
-      where: { id: actionId },
-      data: { status: outcome }
+    const caseData = await prisma.recoveryCase.findUnique({
+      where: { id: recoveryCaseId },
+      include: { payment: true }
     });
 
-    if (outcome === 'SUCCESS') {
-      const caseData = await prisma.recoveryCase.findUnique({
-        where: { id: recoveryCaseId },
-        include: { payment: true }
-      });
+    if (!caseData) return;
 
-      if (caseData) {
-        // Update case
-        await prisma.recoveryCase.update({
+    if (outcome === 'SUCCESS') {
+      await prisma.$transaction([
+        prisma.recoveryAction.update({
+          where: { id: actionId },
+          data: { status: outcome }
+        }),
+        prisma.recoveryCase.update({
           where: { id: recoveryCaseId },
           data: { status: 'RECOVERED' }
-        });
-
-        // Update original payment
-        await prisma.payment.update({
+        }),
+        prisma.payment.update({
           where: { id: caseData.paymentId },
           data: { status: 'SUCCESS' }
-        });
-
-        // Audit log
-        await prisma.auditLog.create({
+        }),
+        prisma.customer.update({
+          where: { id: caseData.payment.customerId },
+          data: {
+            successCount: { increment: 1 },
+            lifetimeValue: { increment: caseData.payment.amount }
+          }
+        }),
+        prisma.auditLog.create({
           data: {
             recoveryCaseId,
             eventType: 'PAYMENT_RECOVERED',
             actor: 'SYSTEM',
             metadata: JSON.stringify({ actionId, outcome, amount: caseData.payment.amount })
           }
-        });
-      }
+        })
+      ]);
     } else if (outcome === 'FAILED') {
-      await prisma.recoveryCase.update({
-        where: { id: recoveryCaseId },
-        data: { status: 'FAILED' }
-      });
-
-      await prisma.auditLog.create({
-        data: {
-          recoveryCaseId,
-          eventType: 'PAYMENT_RECOVERY_FAILED',
-          actor: 'SYSTEM',
-          metadata: JSON.stringify({ actionId, outcome })
-        }
+      await prisma.$transaction([
+        prisma.recoveryAction.update({
+          where: { id: actionId },
+          data: { status: outcome }
+        }),
+        prisma.recoveryCase.update({
+          where: { id: recoveryCaseId },
+          data: { status: 'FAILED' }
+        }),
+        prisma.auditLog.create({
+          data: {
+            recoveryCaseId,
+            eventType: 'PAYMENT_RECOVERY_FAILED',
+            actor: 'SYSTEM',
+            metadata: JSON.stringify({ actionId, outcome })
+          }
+        })
+      ]);
+    } else {
+      await prisma.recoveryAction.update({
+        where: { id: actionId },
+        data: { status: outcome }
       });
     }
   }
