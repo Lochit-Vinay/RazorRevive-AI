@@ -28,19 +28,26 @@ body {
     @apply bg-gray-900/70 backdrop-blur-md border border-gray-800/50 shadow-xl;
   }
   .animate-in {
-    animation: animate-in 0.3s ease-out;
-  }
-  .fade-in {
     opacity: 0;
+    animation: animate-in 0.3s ease-out forwards;
+  }
+  .animate-in.fade-in {
     animation: fade-in 0.3s ease-out forwards;
   }
-  .zoom-in {
+  .animate-in.zoom-in, .zoom-in {
+    opacity: 0;
     transform: scale(0.95);
-    animation: zoom-in 0.3s ease-out forwards;
+    animation: fade-and-zoom 0.3s ease-out forwards;
   }
-  .zoom-in-95 {
+  .animate-in.zoom-in-95, .zoom-in-95 {
+    opacity: 0;
     transform: scale(0.95);
-    animation: zoom-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fade-and-zoom 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .slide-in-from-bottom-5 {
+    opacity: 0;
+    transform: translateY(1.25rem);
+    animation: fade-and-slide-up 0.3s ease-out forwards;
   }
 }
 
@@ -54,7 +61,12 @@ body {
   to { opacity: 1; }
 }
 
-@keyframes zoom-in {
-  from { transform: scale(0.95); }
-  to { transform: scale(1); }
+@keyframes fade-and-zoom {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fade-and-slide-up {
+  from { opacity: 0; transform: translateY(1.25rem); }
+  to { opacity: 1; transform: translateY(0); }
 }

@@ -47,19 +47,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map(t => (
           <div 
             key={t.id} 
-            className="pointer-events-auto animate-in slide-in-from-bottom-5 fade-in duration-300 w-80 max-w-[90vw] glass bg-white/90 rounded-xl p-4 flex items-start shadow-2xl border border-gray-100"
+            className="pointer-events-auto animate-in slide-in-from-bottom-5 fade-in duration-300 w-80 max-w-[90vw] bg-white dark:bg-gray-800 rounded-xl p-4 flex items-start shadow-2xl border border-gray-100 dark:border-gray-700"
           >
             <div className="flex-shrink-0 mr-3">
-              {t.type === 'success' && <CheckCircle2 className="w-5 h-5 text-green-500" />}
-              {t.type === 'error' && <XCircle className="w-5 h-5 text-red-500" />}
-              {t.type === 'warning' && <AlertCircle className="w-5 h-5 text-orange-500" />}
-              {t.type === 'info' && <Info className="w-5 h-5 text-blue-500" />}
+              {t.type === 'success' && <CheckCircle2 className="w-5 h-5 text-green-500 dark:text-green-400" />}
+              {t.type === 'error' && <XCircle className="w-5 h-5 text-red-500 dark:text-red-400" />}
+              {t.type === 'warning' && <AlertCircle className="w-5 h-5 text-orange-500 dark:text-orange-400" />}
+              {t.type === 'info' && <Info className="w-5 h-5 text-blue-500 dark:text-blue-400" />}
             </div>
             <div className="flex-1 mr-2">
-              <h4 className="text-sm font-semibold text-gray-900">{t.title}</h4>
-              {t.message && <p className="text-xs text-gray-500 mt-0.5">{t.message}</p>}
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{t.title}</h4>
+              {t.message && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t.message}</p>}
             </div>
-            <button onClick={() => removeToast(t.id)} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button onClick={() => removeToast(t.id)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
