@@ -115,6 +115,11 @@ export const runBatchSimulation = async (req: Request, res: Response) => {
         }
       });
 
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: { failureCount: { increment: 1 } }
+      });
+
       // Process without auto-executing so they stay pending
       await recoveryEngine.processRecoveryCase(caseData.id, false);
       created++;

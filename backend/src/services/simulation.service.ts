@@ -60,6 +60,7 @@ export class SimulationService {
           where: { id: caseData.payment.customerId },
           data: {
             successCount: { increment: 1 },
+            failureCount: { decrement: 1 },
             lifetimeValue: { increment: caseData.payment.amount }
           }
         }),
