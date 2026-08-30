@@ -19,10 +19,10 @@ export default function RecoveryFunnel({ data }: Props) {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col h-full">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col h-full">
       <div className="mb-6">
-        <h3 className="text-lg font-bold text-gray-900">Recovery Funnel</h3>
-        <p className="text-sm text-gray-500">Pipeline progression from failure to recovery.</p>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recovery Funnel</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Pipeline progression from failure to recovery.</p>
       </div>
 
       <div className="flex-1 flex flex-col justify-between py-2 relative">
@@ -33,14 +33,14 @@ export default function RecoveryFunnel({ data }: Props) {
           return (
             <div key={step.label} className="relative group">
               <div className="flex items-center justify-between text-sm mb-1 z-10 relative">
-                <span className="font-medium text-gray-700 flex items-center">
-                  <Icon className="w-4 h-4 mr-1.5 text-gray-400 group-hover:text-gray-700 transition-colors" />
+                <span className="font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                  <Icon className="w-4 h-4 mr-1.5 text-gray-400 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors" />
                   {step.label}
                 </span>
-                <span className="font-bold text-gray-900">{step.value.toLocaleString('en-IN')}</span>
+                <span className="font-bold text-gray-900 dark:text-white">{step.value.toLocaleString('en-IN')}</span>
               </div>
               
-              <div className="w-full bg-gray-100 rounded-full h-2.5 mb-4 relative overflow-hidden">
+              <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5 mb-4 relative overflow-hidden">
                 <div 
                   className={`h-full rounded-full ${step.color} transition-all duration-1000 ease-out`}
                   style={{ width: `${widthPercent}%` }}

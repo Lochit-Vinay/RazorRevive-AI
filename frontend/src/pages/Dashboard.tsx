@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../lib/api';
 import type { DashboardMetrics } from '../types/dashboard';
+import { useToast } from '../components/ui/ToastContext';
 
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import KPIGrid from '../components/dashboard/KPIGrid';
@@ -12,6 +13,7 @@ import RecentActivity from '../components/dashboard/RecentActivity';
 import QuickActions from '../components/dashboard/QuickActions';
 
 export default function Dashboard() {
+  const { success, error: showError } = useToast();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [timeRange, setTimeRange] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,7 @@ export default function Dashboard() {
     } catch (e: any) {
       console.error(e);
       setError('Failed to load dashboard data. Please try again.');
+      if (isRefresh) showError('Refresh Failed', 'Could not fetch latest metrics.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -43,20 +46,17 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [fetchMetrics]);
 
-  const [simMessage, setSimMessage] = useState<string | null>(null);
-
   const runSimulation = async () => {
     setSimulating(true);
-    setSimMessage(null);
     try {
       const resp = await api.post('/recovery/simulation/run');
       await fetchMetrics(true);
       if (resp.data.message) {
-        setSimMessage(resp.data.message);
-        setTimeout(() => setSimMessage(null), 5000);
+        success('Simulation Complete', resp.data.message);
       }
     } catch (e) {
       console.error(e);
+      showError('Simulation Failed', 'Could not run batch simulation.');
     } finally {
       setSimulating(false);
     }
@@ -65,13 +65,13 @@ export default function Dashboard() {
   if (loading && !metrics) {
     return (
       <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
-        <div className="h-20 bg-gray-200 rounded-xl w-full"></div>
+        <div className="h-20 bg-gray-200 dark:bg-gray-800 rounded-xl w-full"></div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {[1,2,3,4,5].map(i => <div key={i} className="h-32 bg-gray-200 rounded-xl w-full"></div>)}
+          {[1,2,3,4,5].map(i => <div key={i} className="h-32 bg-gray-200 dark:bg-gray-800 rounded-xl w-full"></div>)}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-80 bg-gray-200 rounded-xl w-full"></div>
-          <div className="h-80 bg-gray-200 rounded-xl w-full"></div>
+          <div className="h-80 bg-gray-200 dark:bg-gray-800 rounded-xl w-full"></div>
+          <div className="h-80 bg-gray-200 dark:bg-gray-800 rounded-xl w-full"></div>
         </div>
       </div>
     );
@@ -79,22 +79,16 @@ export default function Dashboard() {
 
   if (error || !metrics) {
     return (
-      <div className="p-8 flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="p-8 flex flex-col items-center justify-center min-h-[50vh] animate-in fade-in">
         <p className="text-red-500 font-medium mb-4">{error}</p>
-        <button onClick={() => fetchMetrics(true)} className="px-4 py-2 bg-gray-900 text-white rounded-lg">Retry</button>
+        <button onClick={() => fetchMetrics(true)} className="px-6 py-2.5 bg-gray-900 dark:bg-white hover:bg-black dark:hover:bg-gray-200 text-white dark:text-gray-900 font-medium rounded-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">Retry connection</button>
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
       
-      {simMessage && (
-        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-sm flex items-center mb-6">
-          <span className="font-medium">{simMessage}</span>
-        </div>
-      )}
-
       <DashboardHeader 
         timeRange={timeRange} 
         setTimeRange={setTimeRange} 

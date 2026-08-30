@@ -12,11 +12,11 @@ export default function RecentActivity({ activities }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-lg font-bold text-gray-900 mb-6">Recent Activity</h3>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Recent Activity</h3>
       
       {activities.length === 0 ? (
-        <p className="text-sm text-gray-500 py-4 text-center">No recent activity.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">No recent activity.</p>
       ) : (
         <div className="space-y-5 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
           {activities.map((act) => (
@@ -27,11 +27,11 @@ export default function RecentActivity({ activities }: Props) {
               <div className="ml-4 flex-1">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="text-sm font-bold text-gray-900">
+                    <h4 className="text-sm font-bold text-gray-900 dark:text-white">
                       {act.eventType.replace(/_/g, ' ')}
                     </h4>
                     {act.recoveryCase && (
-                      <p className="text-xs font-mono text-gray-500 mt-0.5">
+                      <p className="text-xs font-mono text-gray-500 dark:text-gray-400 mt-0.5">
                         {act.recoveryCase.paymentId.split('-')[0]} • ₹{act.recoveryCase.payment.amount.toLocaleString('en-IN')}
                       </p>
                     )}

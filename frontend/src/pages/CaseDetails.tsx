@@ -56,14 +56,14 @@ export default function CaseDetails() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
-      <Link to="/cases" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 mb-2">
+      <Link to="/cases" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-white mb-2">
         <ArrowLeft className="w-4 h-4 mr-1" /> Back to Cases
       </Link>
       
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Case Overview</h2>
-          <p className="text-gray-500 mt-1 font-mono text-sm">Payment ID: {data.paymentId}</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Case Overview</h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 font-mono text-sm">Payment ID: {data.paymentId}</p>
         </div>
         
         <div className="flex space-x-3">
@@ -77,7 +77,7 @@ export default function CaseDetails() {
             </button>
           )}
           {data.status === 'PENDING' && guardrail?.status === 'BLOCKED' && (
-            <div className="bg-red-100 text-red-800 px-5 py-2.5 rounded-lg font-bold flex items-center border border-red-200">
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-5 py-2.5 rounded-lg font-bold flex items-center border border-red-200 dark:border-red-900/50">
               <ShieldAlert className="w-5 h-5 mr-2" />
               Blocked by Guardrails
             </div>
@@ -93,13 +93,13 @@ export default function CaseDetails() {
             </button>
           )}
           {data.status === 'RECOVERED' && (
-            <div className="bg-green-100 text-green-800 px-5 py-2.5 rounded-lg font-bold flex items-center border border-green-200">
+            <div className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-5 py-2.5 rounded-lg font-bold flex items-center border border-green-200 dark:border-green-900/50">
               <CheckCircle2 className="w-5 h-5 mr-2" />
               Successfully Recovered
             </div>
           )}
           {data.status === 'FAILED' && (
-            <div className="bg-red-100 text-red-800 px-5 py-2.5 rounded-lg font-bold flex items-center border border-red-200">
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-5 py-2.5 rounded-lg font-bold flex items-center border border-red-200 dark:border-red-900/50">
               <XCircle className="w-5 h-5 mr-2" />
               Recovery Failed
             </div>
@@ -113,57 +113,57 @@ export default function CaseDetails() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* AI Diagnosis */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-indigo-50 border-b border-indigo-100 p-4 flex items-center">
-              <Cpu className="w-5 h-5 text-indigo-600 mr-2" />
-              <h3 className="font-bold text-indigo-900">AI Diagnosis & Recommendation</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-900/30 p-4 flex items-center">
+              <Cpu className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mr-2" />
+              <h3 className="font-bold text-indigo-900 dark:text-indigo-200">AI Diagnosis & Recommendation</h3>
             </div>
             <div className="p-6">
               {ai ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Root Cause</p>
-                      <p className="text-gray-900 font-medium mt-1">{ai.rootCause.replace(/_/g, ' ')}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Root Cause</p>
+                      <p className="text-gray-900 dark:text-white font-medium mt-1">{ai.rootCause.replace(/_/g, ' ')}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Confidence</p>
-                      <p className="text-gray-900 font-medium mt-1">{(ai.confidence * 100).toFixed(1)}%</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Confidence</p>
+                      <p className="text-gray-900 dark:text-white font-medium mt-1">{(ai.confidence * 100).toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Recommended Action</p>
-                      <span className="inline-block mt-1 bg-indigo-100 text-indigo-800 text-sm font-bold px-3 py-1 rounded-full">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Recommended Action</p>
+                      <span className="inline-block mt-1 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-300 text-sm font-bold px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-800">
                         {ai.recommendedAction}
                       </span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Recoverability</p>
-                      <p className="text-gray-900 font-medium mt-1">{ai.recoverability}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Recoverability</p>
+                      <p className="text-gray-900 dark:text-white font-medium mt-1">{ai.recoverability}</p>
                     </div>
                   </div>
-                  <div className="pt-4 border-t border-gray-100">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">AI Reasoning</p>
-                    <p className="text-gray-700 italic">"{ai.reason}"</p>
+                  <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">AI Reasoning</p>
+                    <p className="text-gray-700 dark:text-gray-300 italic">"{ai.reason}"</p>
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4">Click "Analyze & Recover" to generate AI diagnosis.</p>
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4">Click "Analyze & Recover" to generate AI diagnosis.</p>
               )}
             </div>
           </div>
 
           {/* Guardrail Evaluation */}
           {ai && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="bg-gray-50 border-b border-gray-200 p-4 flex items-center justify-between">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+              <div className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
                 <div className="flex items-center">
-                  <ShieldCheck className="w-5 h-5 text-gray-600 mr-2" />
-                  <h3 className="font-bold text-gray-900">Deterministic Guardrails</h3>
+                  <ShieldCheck className="w-5 h-5 text-gray-600 dark:text-gray-300 mr-2" />
+                  <h3 className="font-bold text-gray-900 dark:text-white">Deterministic Guardrails</h3>
                 </div>
                 {guardrail && (
                   <span className={clsx(
                     "text-xs font-bold px-3 py-1 rounded-full",
-                    guardrail.status === 'ALLOWED' ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                    guardrail.status === 'ALLOWED' ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300" : "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300"
                   )}>
                     {guardrail.status}
                   </span>
@@ -173,8 +173,8 @@ export default function CaseDetails() {
                 {guardrail ? (
                   <ul className="divide-y divide-gray-100">
                     {Object.entries(rules).map(([rule, status]) => (
-                      <li key={rule} className="flex justify-between p-4 items-center hover:bg-gray-50">
-                        <span className="text-sm font-medium text-gray-700">{rule.replace(/_/g, ' ')}</span>
+                      <li key={rule} className="flex justify-between p-4 items-center hover:bg-gray-50 dark:bg-gray-800/50">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{rule.replace(/_/g, ' ')}</span>
                         {status === 'PASS' && <span className="flex items-center text-green-600 text-sm font-bold"><CheckCircle2 className="w-4 h-4 mr-1"/> PASS</span>}
                         {status === 'FAIL' && <span className="flex items-center text-red-600 text-sm font-bold"><XCircle className="w-4 h-4 mr-1"/> BLOCKED</span>}
                         {status === 'NOT_APPLICABLE' && <span className="text-gray-400 text-sm font-medium">N/A</span>}
@@ -188,7 +188,7 @@ export default function CaseDetails() {
                     )}
                   </ul>
                 ) : (
-                  <p className="text-gray-500 text-center py-6">Pending guardrail check.</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-center py-6">Pending guardrail check.</p>
                 )}
               </div>
             </div>
@@ -208,30 +208,30 @@ export default function CaseDetails() {
           )}
 
           {/* Audit Trail */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="font-bold text-gray-900 mb-6 flex items-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-6 flex items-center">
               <ShieldAlert className="w-5 h-5 text-gray-400 mr-2" />
               Audit Trail
             </h3>
             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
               {logs.map((log: any) => (
                 <div key={log.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-gray-200 text-gray-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                    <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-gray-200 text-gray-500 dark:text-gray-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                    <div className="w-2 h-2 rounded-full bg-gray-50 dark:bg-gray-800/500"></div>
                   </div>
-                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-lg border border-gray-100 shadow-sm bg-white">
+                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-lg border border-gray-100 shadow-sm bg-white dark:bg-gray-800">
                     <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-bold text-sm text-gray-900">{log.eventType.replace(/_/g, ' ')}</h4>
+                      <h4 className="font-bold text-sm text-gray-900 dark:text-white">{log.eventType.replace(/_/g, ' ')}</h4>
                       <span className="text-xs text-gray-400">{new Date(log.createdAt).toLocaleTimeString()}</span>
                     </div>
-                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 mb-2">Actor: {log.actor}</span>
-                    <pre className="text-[10px] text-gray-500 bg-gray-50 p-2 rounded border border-gray-100 overflow-x-auto">
+                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 mb-2">Actor: {log.actor}</span>
+                    <pre className="text-[10px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 p-2 rounded border border-gray-100 dark:border-gray-700 overflow-x-auto">
                       {JSON.stringify(JSON.parse(log.metadata || '{}'), null, 2)}
                     </pre>
                   </div>
                 </div>
               ))}
-              {logs.length === 0 && <p className="text-sm text-gray-500 ml-8">No audit logs available yet.</p>}
+              {logs.length === 0 && <p className="text-sm text-gray-500 dark:text-gray-400 ml-8">No audit logs available yet.</p>}
             </div>
           </div>
 
@@ -239,50 +239,50 @@ export default function CaseDetails() {
 
         {/* Right Column */}
         <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center">
               <User className="w-5 h-5 text-gray-400 mr-2" />
               Customer Context
             </h3>
             <div className="space-y-4">
               <div>
-                <p className="text-xs text-gray-500 uppercase font-semibold">Name</p>
-                <p className="text-sm font-medium text-gray-900">{data.payment?.customer?.name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Name</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{data.payment?.customer?.name}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 uppercase font-semibold">Email</p>
-                <p className="text-sm font-medium text-gray-900">{data.payment?.customer?.email}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Email</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{data.payment?.customer?.email}</p>
               </div>
-              <div className="pt-3 border-t border-gray-100">
+              <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-500">Lifetime Value</span>
-                  <span className="font-semibold text-gray-900">₹{data.payment?.customer?.lifetimeValue.toLocaleString('en-IN')}</span>
+                  <span className="text-gray-500 dark:text-gray-400">Lifetime Value</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">₹{data.payment?.customer?.lifetimeValue.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Success/Fail Ratio</span>
-                  <span className="font-semibold text-gray-900">{data.payment?.customer?.successCount} / {data.payment?.customer?.failureCount}</span>
+                  <span className="text-gray-500 dark:text-gray-400">Success/Fail Ratio</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">{data.payment?.customer?.successCount} / {data.payment?.customer?.failureCount}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center">
               <CreditCard className="w-5 h-5 text-gray-400 mr-2" />
               Payment Details
             </h3>
             <div className="space-y-4">
               <div>
-                <p className="text-xs text-gray-500 uppercase font-semibold">Amount</p>
-                <p className="text-lg font-bold text-gray-900">₹{data.payment?.amount.toLocaleString('en-IN')}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Amount</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">₹{data.payment?.amount.toLocaleString('en-IN')}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 uppercase font-semibold">Method</p>
-                <p className="text-sm font-medium text-gray-900">{data.payment?.paymentMethod}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Method</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{data.payment?.paymentMethod}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 uppercase font-semibold">Failure Reason</p>
-                <p className="text-sm font-medium text-red-600 bg-red-50 p-2 rounded mt-1 border border-red-100">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Failure Reason</p>
+                <p className="text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded mt-1 border border-red-100 dark:border-red-900/30">
                   {data.payment?.failures?.[0]?.reason}
                 </p>
               </div>

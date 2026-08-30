@@ -28,8 +28,10 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     // Helper to get KPIs for a given period filter
     const getKPIs = async (filter: any) => {
       const cases = await prisma.recoveryCase.findMany({ where: filter });
+      
+      const actionFilter = filter.createdAt ? { executedAt: filter.createdAt } : {};
       const actionsCount = await prisma.recoveryAction.findMany({
-        where: filter,
+        where: actionFilter,
         distinct: ['recoveryCaseId']
       });
       const escalations = cases.filter(c => c.status === 'ESCALATED').length;

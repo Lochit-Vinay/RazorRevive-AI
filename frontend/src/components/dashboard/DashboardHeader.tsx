@@ -23,22 +23,22 @@ export default function DashboardHeader({
   return (
     <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Revenue Recovery Overview</h2>
-        <p className="text-gray-500 mt-1 max-w-2xl text-sm">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Revenue Recovery Overview</h2>
+        <p className="text-gray-500 dark:text-gray-400 mt-1 max-w-2xl text-sm">
           Monitor the end-to-end payment recovery pipeline: failures detected, AI recommendations, deterministic guardrail decisions, and total revenue recovered.
         </p>
       </div>
       
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center space-x-2 bg-white border border-gray-200 rounded-lg p-1 shadow-sm">
+        <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-1 shadow-sm">
           {['24h', '7d', '30d', 'all'].map((range) => (
             <button
               key={range}
               onClick={() => setTimeRange(range)}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 timeRange === range 
-                  ? 'bg-gray-100 text-gray-900 shadow-sm' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white shadow-sm' 
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 dark:hover:text-gray-300'
               }`}
             >
               {range === 'all' ? 'All Time' : range.toUpperCase()}
@@ -49,7 +49,7 @@ export default function DashboardHeader({
         <button
           onClick={onRefresh}
           disabled={refreshing}
-          className="flex items-center justify-center p-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm disabled:opacity-50"
+          className="flex items-center justify-center p-2.5 bg-white dark:bg-gray-800 border border-gray-200 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 dark:text-white transition-colors shadow-sm disabled:opacity-50"
           title="Refresh Data"
         >
           <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />

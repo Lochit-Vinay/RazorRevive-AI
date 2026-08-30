@@ -20,10 +20,10 @@ export default function OutcomeChart({ current }: Props) {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col h-full">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col h-full">
       <div className="mb-6">
-        <h3 className="text-lg font-bold text-gray-900">Recovery Outcome</h3>
-        <p className="text-sm text-gray-500">Distribution of initially at-risk revenue.</p>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recovery Outcome</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Distribution of initially at-risk revenue.</p>
       </div>
 
       <div className="flex-1 w-full min-h-[300px]">
@@ -44,7 +44,7 @@ export default function OutcomeChart({ current }: Props) {
         </ResponsiveContainer>
       </div>
       
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg text-sm text-gray-600 border border-gray-100">
+      <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-sm text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-700">
         <p>Total Revenue at Risk evaluated: <strong>{formatCurrency(current.revenueAtRisk)}</strong></p>
       </div>
     </div>
