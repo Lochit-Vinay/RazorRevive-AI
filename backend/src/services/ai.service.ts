@@ -114,6 +114,16 @@ export class AiDecisionEngine {
       };
     }
 
+    if (reason === 'demo_execution_fail') {
+      return {
+        rootCause: reason,
+        recoverability: 'HIGH',
+        confidence: 0.99,
+        recommendedAction: 'PAYMENT_LINK',
+        reason: 'Demo scenario for execution failure via payment link.'
+      };
+    }
+
     if (reason === 'bank_decline' && context.amount > 25000) {
       return {
         rootCause: reason,

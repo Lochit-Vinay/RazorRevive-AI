@@ -91,28 +91,79 @@ async function main() {
 
   console.log(`Created ${failedCount} failed payments with recovery cases`);
   
-  // Create an explicit case for testing Escalation (Exceeds Amount Limit)
-  const highValueCustomer = customers[0];
-  const highValuePayment = await prisma.payment.create({
+  console.log('Creating deterministic demo scenarios (Phase 11)...');
+  const demoScenarios = [
+    { name: 'Demo 1 - Successful Recovery', reason: 'temporary_network_failure', amount: 1500 },
+    { name: 'Demo 2 - Retryable Timeout', reason: 'timeout', amount: 2500 },
+    { name: 'Demo 3 - Human Approval', reason: 'bank_decline', amount: 35000 },
+    { name: 'Demo 4 - Guardrail Blocked', reason: 'timeout', amount: 60000 },
+    { name: 'Demo 5 - Execution Failure', reason: 'demo_execution_fail', amount: 5000 },
+  ];
+
+  for (let i = 0; i < demoScenarios.length; i++) {
+    const sc = demoScenarios[i];
+    const customer = await prisma.customer.create({
       data: {
-        customerId: highValueCustomer.id,
-        amount: 55000, // Above typical threshold
-        status: 'FAILED',
-        paymentMethod: 'CARD',
-        failures: {
-          create: {
-            reason: 'bank_decline',
-          }
-        }
-      },
-    });
-    await prisma.recoveryCase.create({
-      data: {
-        paymentId: highValuePayment.id,
-        status: 'PENDING',
-        revenueAtRisk: 55000,
+        merchantId: merchant.id,
+        email: `demo${i+1}@example.com`,
+        name: sc.name,
+        lifetimeValue: 100000,
+        successCount: 10,
+        failureCount: 1,
       }
     });
+
+    const payment = await prisma.payment.create({
+      data: {
+        customerId: customer.id,
+        amount: sc.amount,
+        status: 'FAILED',
+        paymentMethod: 'CARD',
+        failures: { create: { reason: sc.reason } }
+      }
+    });
+
+    await prisma.recoveryCase.create({
+      data: {
+        paymentId: payment.id,
+        status: 'PENDING',
+        revenueAtRisk: sc.amount,
+      }
+    });
+  }
+
+  // Demo 6 - Sequential / Multiple Cases
+  const customer6 = await prisma.customer.create({
+    data: {
+      merchantId: merchant.id,
+      email: `demo6@example.com`,
+      name: 'Demo 6 - Sequential Recoveries',
+      lifetimeValue: 50000,
+      successCount: 5,
+      failureCount: 2,
+    }
+  });
+
+  const seqReasons = ['temporary_network_failure', 'expired_card'];
+  for (const reason of seqReasons) {
+    const payment = await prisma.payment.create({
+      data: {
+        customerId: customer6.id,
+        amount: 2000,
+        status: 'FAILED',
+        paymentMethod: 'UPI',
+        failures: { create: { reason } }
+      }
+    });
+
+    await prisma.recoveryCase.create({
+      data: {
+        paymentId: payment.id,
+        status: 'PENDING',
+        revenueAtRisk: 2000,
+      }
+    });
+  }
 
   console.log('Seeding finished.');
 }

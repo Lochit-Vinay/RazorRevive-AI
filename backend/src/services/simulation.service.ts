@@ -6,6 +6,10 @@ export class SimulationService {
    * Simulates the outcome of a recovery action deterministically for demo/testing.
    */
   async simulateRecoveryOutcome(actionType: string, rootCause: string): Promise<'SUCCESS' | 'FAILED' | 'PENDING'> {
+    if (rootCause === 'demo_execution_fail') {
+      return 'FAILED';
+    }
+
     if (actionType === 'RETRY') {
       if (rootCause === 'temporary_network_failure' || rootCause === 'timeout') {
         return 'SUCCESS';
