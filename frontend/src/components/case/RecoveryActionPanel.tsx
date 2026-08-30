@@ -28,7 +28,8 @@ export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, gu
   const handleExecute = async () => {
     setExecuting(true);
     try {
-      await api.post(`/recovery/execute/${caseId}`);
+      const idempotencyKey = crypto.randomUUID();
+      await api.post(`/recovery/execute/${caseId}`, { idempotencyKey });
       setShowExecute(false);
       success('Execution Successful', 'The recovery action has been processed.');
       onRefresh();

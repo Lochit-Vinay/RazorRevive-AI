@@ -66,7 +66,8 @@ export const analyzeCase = async (req: Request, res: Response) => {
 export const executeCase = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
-    await recoveryEngine.executeRecoveryCase(id);
+    const idempotencyKey = req.body.idempotencyKey as string;
+    await recoveryEngine.executeRecoveryCase(id, idempotencyKey);
     res.json({ success: true });
   } catch (error: any) {
     console.error(error);

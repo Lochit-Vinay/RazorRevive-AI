@@ -137,7 +137,7 @@ export class RecoveryEngine {
   /**
    * Manually executes a recovery action for a case that has been analyzed and allowed.
    */
-  async executeRecoveryCase(caseId: string) {
+  async executeRecoveryCase(caseId: string, providedIdempotencyKey?: string) {
     const recoveryCase = await prisma.recoveryCase.findUnique({
       where: { id: caseId },
       include: {
@@ -148,12 +148,17 @@ export class RecoveryEngine {
     });
 
     if (!recoveryCase) throw new Error('Recovery case not found');
-    if (recoveryCase.status !== 'PENDING') throw new Error('Case is not pending');
 
     // Idempotency: prevent duplicate execution if an action is already present
     if (recoveryCase.recoveryActions.length > 0) {
+      if (providedIdempotencyKey && recoveryCase.recoveryActions[0].idempotencyKey === providedIdempotencyKey) {
+        // Same key means it was already processed successfully and the network just dropped the previous response
+        return;
+      }
       throw new Error('Recovery action already executed for this case');
     }
+
+    if (recoveryCase.status !== 'PENDING') throw new Error('Case is not pending');
 
     const aiDecision = recoveryCase.aiDecisions[0];
     if (!aiDecision) throw new Error('Case must be analyzed first');
@@ -191,7 +196,7 @@ export class RecoveryEngine {
       return;
     }
 
-    const idempotencyKey = uuidv4();
+    const idempotencyKey = providedIdempotencyKey || uuidv4();
     const action = await prisma.recoveryAction.create({
       data: {
         recoveryCaseId: caseId,

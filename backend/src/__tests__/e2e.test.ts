@@ -10,8 +10,10 @@ describe('End-to-End Recovery Integration', () => {
   let successPaymentId: string;
   let failedPaymentId: string;
   let recoveryCaseId: string;
+  let testIdempotencyKey: string;
 
   beforeAll(async () => {
+    testIdempotencyKey = `test-key-${Date.now()}`;
     // Clean up if previous tests failed
     // Ensure we have a merchant
     const merchant = await prisma.merchant.upsert({
@@ -127,7 +129,9 @@ describe('End-to-End Recovery Integration', () => {
       data: { status: 'PENDING' }
     });
 
-    const res = await request(app).post(`/api/recovery/execute/${recoveryCaseId}`);
+    const res = await request(app)
+      .post(`/api/recovery/execute/${recoveryCaseId}`)
+      .send({ idempotencyKey: testIdempotencyKey });
     expect(res.status).toBe(200);
 
     // Verify Action created
@@ -146,10 +150,11 @@ describe('End-to-End Recovery Integration', () => {
   });
 
   it('9. Idempotent repeated recovery execution', async () => {
-    const res = await request(app).post(`/api/recovery/execute/${recoveryCaseId}`);
-    // Should fail because case is no longer PENDING
-    expect(res.status).toBe(500);
-    expect(res.body.error).toContain('Case is not pending');
+    const res = await request(app)
+      .post(`/api/recovery/execute/${recoveryCaseId}`)
+      .send({ idempotencyKey: testIdempotencyKey });
+    // Should return 200 success because it matches the previous idempotency key
+    expect(res.status).toBe(200);
   });
 
   it('10. Failed recovery where state and metrics remain correct', async () => {
@@ -174,7 +179,9 @@ describe('End-to-End Recovery Integration', () => {
     });
 
     // Try to execute
-    const res = await request(app).post(`/api/recovery/execute/${failCase.id}`);
+    const res = await request(app)
+      .post(`/api/recovery/execute/${failCase.id}`)
+      .send({ idempotencyKey: `fail-key-${Date.now()}` });
     expect(res.status).toBe(500); // Because guardrail is blocked
     
     const finalCase = await prisma.recoveryCase.findUnique({ where: { id: failCase.id } });
