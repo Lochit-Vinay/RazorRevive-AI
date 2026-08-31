@@ -17,6 +17,23 @@
 
 ---
 
+## Demo
+
+> **[Demo GIF / Screenshots]** — add a short screen recording or 2–3 dashboard screenshots here before submission.
+
+**What the demo shows:**
+
+1. Payment failure enters the recovery pipeline
+2. Input is validated
+3. AI diagnoses the failure
+4. Recovery Decision Engine proposes an action
+5. Deterministic guardrails approve or reject it
+6. Approved recovery is executed
+7. Complete decision chain is recorded
+8. Recovery metrics are reflected on the dashboard
+
+---
+
 ## 1. Overview
 
 A failed payment is not automatically lost revenue — but it isn't automatically recoverable either. Different failures (insufficient funds, expired instruments, bank timeouts, gateway errors) call for different recovery strategies, and retrying indiscriminately can hurt conversion, duplicate charges, and degrade customer trust.
@@ -44,9 +61,21 @@ A recovery system that can tell recoverable failures apart from unrecoverable on
 
 This is the architectural spine of the entire project.
 
-> **AI → Recommendation**
-> **Rules → Permission**
-> **Backend → Execution**
+```
+                 AI
+          Diagnose & Recommend
+                  ↓
+        Deterministic Guardrails
+             Decide What
+               Is Allowed
+                  ↓
+             Backend
+              Executes
+                  ↓
+             Audit Trail
+                  ↓
+        Revenue Recovery Metrics
+```
 
 The AI layer never directly executes a financial action. It produces a diagnosis and a recommended recovery direction. A deterministic guardrail layer — plain, testable, auditable backend logic — decides whether that recommendation is permitted given the payment context, business rules, and safety constraints. Only actions that clear the guardrails are executed, and the execution, decision, and diagnosis are all persisted together.
 
@@ -275,25 +304,38 @@ No infrastructure beyond what's listed above (e.g., no Postgres, Redis, Kafka, K
 ## 17. Project Architecture (Folder Overview)
 
 ```
-razorpay-ai-revenue-recovery-agent/
-├── frontend/                 # React dashboard
-│   └── src/
-├── backend/                  # Node.js + Express + TypeScript API
+Recovery-Agent/
+├── backend/
 │   ├── src/
-│   │   ├── api/               # Route handlers
-│   │   ├── validation/        # Zod schemas
-│   │   ├── ai/                # AI diagnosis + fallback rule engine
-│   │   ├── decision/           # Recovery decision engine
-│   │   ├── guardrails/        # Deterministic guardrail logic
-│   │   ├── execution/         # Recovery execution
-│   │   ├── audit/             # Audit trail logging
-│   │   └── middleware/        # Error handling, security, rate limiting
-│   ├── prisma/                # Schema + SQLite dev database
-│   └── tests/                 # Jest test suites
+│   │   ├── controllers/        # recovery.controller.ts, dashboard.controller.ts
+│   │   ├── routes/             # recovery.routes.ts, dashboard.routes.ts
+│   │   ├── services/           # ai.service.ts, guardrail.service.ts,
+│   │   │                       # recovery.service.ts, simulation.service.ts
+│   │   ├── validators/         # recovery.validator.ts (Zod schemas)
+│   │   ├── middleware/         # errorHandler.ts
+│   │   ├── __tests__/          # ai.service.test.ts, guardrail.service.test.ts,
+│   │   │                       # e2e.test.ts
+│   │   ├── db.ts
+│   │   └── index.ts            # Express app entrypoint
+│   ├── prisma/                 # schema.prisma, migrations, dev.db (SQLite)
+│   ├── jest.config.js
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── dashboard/      # DashboardHeader, KPIGrid, OutcomeChart,
+│   │   │   │                   # RecoveryFunnel, FailureReasons, TopCases,
+│   │   │   │                   # RecentActivity, QuickActions
+│   │   │   ├── case/           # RecoveryActionPanel
+│   │   │   └── ui/             # ThemeContext, ToastContext
+│   │   ├── lib/                # api.ts
+│   │   └── __tests__/
+│   └── package.json
+├── docs/
+│   ├── architecture.md
+│   └── engineering-decisions.md
 └── README.md
 ```
-
-*(Adjust to match exact repository layout if it differs.)*
 
 ---
 
@@ -301,8 +343,8 @@ razorpay-ai-revenue-recovery-agent/
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd razorpay-ai-revenue-recovery-agent
+git clone https://github.com/Lochit-Vinay/Recovery-Agent.git
+cd Recovery-Agent
 
 # Install backend dependencies
 cd backend
@@ -337,15 +379,20 @@ npm test
 
 ## 20. API Overview
 
-| Endpoint (indicative) | Purpose |
-|---|---|
-| `POST /api/recovery/diagnose` | Submit a failed payment for AI diagnosis |
-| `POST /api/recovery/decide` | Get a recommended recovery action for a diagnosis |
-| `POST /api/recovery/execute` | Attempt execution of a guardrail-approved recovery action |
-| `GET /api/recovery/audit/:id` | Retrieve the full audit trail for a recovery case |
-| `GET /api/metrics/recovery` | Retrieve aggregated recovery metrics |
+All routes are mounted under `/api`. A separate `GET /health` endpoint reports service liveness.
 
-*(Align exact routes/method names with the actual backend implementation.)*
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/api/recovery/cases` | List all recovery cases, each with its latest payment, AI decision, guardrail evaluation, and recovery action |
+| `GET` | `/api/recovery/cases/:id` | Get full details for a single case, including complete decision and audit history |
+| `POST` | `/api/recovery/analyze/:id` | Run the AI Diagnosis + Recovery Decision Engine for a case **without** executing any action (rate-limited: 100 requests / 15 min per IP) |
+| `POST` | `/api/recovery/execute/:id` | Execute a guardrail-approved recovery action for a case, using an idempotency key to prevent duplicate execution (rate-limited: 50 requests / 15 min per IP) |
+| `POST` | `/api/recovery/cases/:id/approve` | Approve a case that has been escalated for manual review |
+| `POST` | `/api/recovery/simulation/run` | Run a batch simulation across multiple recovery scenarios |
+| `GET` | `/api/dashboard/metrics` | Retrieve aggregated recovery metrics for the dashboard |
+| `GET` | `/health` | Basic health check |
+
+A global rate limiter (100 requests / 15 min per IP) also applies to all `/api` routes, with the tighter per-route limits above layered on top for the analyze and execute endpoints specifically.
 
 ---
 
