@@ -1,9 +1,11 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../db';
+import { metricsQuerySchema } from '../validators/recovery.validator';
 
-export const getDashboardMetrics = async (req: Request, res: Response) => {
+export const getDashboardMetrics = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const range = (req.query.range as string) || 'all';
+    const { query } = metricsQuerySchema.parse({ query: req.query });
+    const range = query.range;
     
     const now = new Date();
     let currentStartDate: Date | null = null;
@@ -131,7 +133,6 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       totalCases: await prisma.recoveryCase.count()
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch metrics' });
+    next(error);
   }
 };

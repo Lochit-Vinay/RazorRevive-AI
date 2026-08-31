@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../db';
 import { recoveryEngine } from '../services/recovery.service';
+import { executeRecoverySchema, caseIdSchema } from '../validators/recovery.validator';
 
 export const listCases = async (req: Request, res: Response) => {
   try {
@@ -52,26 +53,27 @@ export const getCaseDetails = async (req: Request, res: Response) => {
   }
 };
 
-export const analyzeCase = async (req: Request, res: Response) => {
+export const analyzeCase = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = req.params.id as string;
+    const { params } = caseIdSchema.parse({ params: req.params });
+    const id = params.id;
     await recoveryEngine.processRecoveryCase(id, false); // false = DO NOT auto-execute
     res.json({ success: true });
   } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ error: error.message || 'Failed to process case' });
+    next(error);
   }
 };
 
-export const executeCase = async (req: Request, res: Response) => {
+export const executeCase = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = req.params.id as string;
-    const idempotencyKey = req.body.idempotencyKey as string;
+    const { params } = caseIdSchema.parse({ params: req.params });
+    const { body } = executeRecoverySchema.parse({ body: req.body });
+    const id = params.id;
+    const idempotencyKey = body.idempotencyKey;
     await recoveryEngine.executeRecoveryCase(id, idempotencyKey);
     res.json({ success: true });
   } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ error: error.message || 'Failed to execute case' });
+    next(error);
   }
 };
 
@@ -133,9 +135,10 @@ export const runBatchSimulation = async (req: Request, res: Response) => {
   }
 };
 
-export const escalateApprove = async (req: Request, res: Response) => {
+export const escalateApprove = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id = req.params.id as string;
+        const { params } = caseIdSchema.parse({ params: req.params });
+        const id = params.id;
         
         await prisma.recoveryCase.update({
             where: { id },
@@ -165,6 +168,6 @@ export const escalateApprove = async (req: Request, res: Response) => {
         });
         res.json({ success: true });
     } catch(e) {
-        res.status(500).json({error: 'Failed to approve'});
+        next(e);
     }
 }
