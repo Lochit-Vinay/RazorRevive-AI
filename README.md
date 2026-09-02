@@ -187,6 +187,15 @@ Guardrails are plain backend logic — not model output — that check whether a
 - Invalid or out-of-bounds recovery attempts
 - Duplicate or redundant recovery execution
 
+### Stopping Rules
+
+To prevent runaway retry loops and ensure safe degradation, the guardrail engine enforces the following deterministic stopping rules:
+
+- **Maximum retry attempts per payment/customer**: Caps the number of times a `RETRY` action can be recommended for a specific failure (currently 2).
+- **Cooldown between attempts**: Enforces a minimum time window (currently 30 minutes) between any successive automated recovery actions for the same payment.
+- **Duplicate-action prevention**: Blocks identical recovery actions (e.g., sending another payment link) if one is already pending.
+- **Human review escalation after maximum failures**: Automatically blocks and escalates the case to human review if the total number of failed recovery attempts of any type reaches the maximum limit (currently 3).
+
 **Phase 12 hardening** extended this layer with:
 
 - Schema and input validation
