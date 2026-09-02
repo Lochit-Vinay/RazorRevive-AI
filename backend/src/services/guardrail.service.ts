@@ -9,7 +9,9 @@ export interface GuardrailResult {
 
 export class GuardrailEngine {
   private readonly MAX_RETRIES = 2;
+  private readonly MAX_FAILURES = 3;
   private readonly AMOUNT_THRESHOLD = 50000;
+  private readonly COOLDOWN_MINUTES = 30;
 
   async evaluateAction(recoveryCaseId: string, aiDecision: AiDecisionResult): Promise<GuardrailResult> {
     const recoveryCase = await prisma.recoveryCase.findUnique({
@@ -25,8 +27,10 @@ export class GuardrailEngine {
     const rulesChecked: Record<string, 'PASS' | 'FAIL' | 'NOT_APPLICABLE'> = {
       'PAYMENT_STATUS': 'PASS',
       'RETRY_LIMIT': 'PASS',
+      'FAILURE_LIMIT': 'PASS',
       'AMOUNT_THRESHOLD': 'PASS',
-      'DUPLICATE_CHECK': 'PASS'
+      'DUPLICATE_CHECK': 'PASS',
+      'COOLDOWN_CHECK': 'PASS'
     };
 
     // Rule 1: Payment Status - cannot recover already successful payment
@@ -54,16 +58,46 @@ export class GuardrailEngine {
       };
     }
 
-    // Rule 3: Retry Limit & Duplicate Check
     const pastActions = recoveryCase.recoveryActions;
+
+    // Rule 3: Cooldown Check
+    if (pastActions.length > 0) {
+      const sortedActions = [...pastActions].sort((a, b) => b.executedAt.getTime() - a.executedAt.getTime());
+      const mostRecentAction = sortedActions[0];
+      const timeSinceLastAction = Date.now() - mostRecentAction.executedAt.getTime();
+      const cooldownMs = this.COOLDOWN_MINUTES * 60 * 1000;
+      
+      if (timeSinceLastAction < cooldownMs) {
+        rulesChecked['COOLDOWN_CHECK'] = 'FAIL';
+        return {
+          status: 'BLOCKED',
+          reason: `Cooldown active. Last action was executed less than ${this.COOLDOWN_MINUTES} minutes ago.`,
+          rulesChecked
+        };
+      }
+    } else {
+      rulesChecked['COOLDOWN_CHECK'] = 'NOT_APPLICABLE';
+    }
     
+    // Rule 4: Failure Limit Check
+    const failedAttempts = pastActions.filter(a => a.status === 'FAILED').length;
+    if (failedAttempts >= this.MAX_FAILURES) {
+      rulesChecked['FAILURE_LIMIT'] = 'FAIL';
+      return {
+        status: 'BLOCKED',
+        reason: `Maximum failure count (${this.MAX_FAILURES}) exceeded. Human review/escalation is required.`,
+        rulesChecked
+      };
+    }
+
+    // Rule 5: Retry Limit
     if (aiDecision.recommendedAction === 'RETRY') {
       const retryAttempts = pastActions.filter(a => a.actionType === 'RETRY').length;
       if (retryAttempts >= this.MAX_RETRIES) {
         rulesChecked['RETRY_LIMIT'] = 'FAIL';
         return {
           status: 'BLOCKED',
-          reason: `Maximum retry count (${this.MAX_RETRIES}) exceeded.`,
+          reason: `Maximum retry count (${this.MAX_RETRIES}) exceeded. Human review/escalation is required.`,
           rulesChecked
         };
       }

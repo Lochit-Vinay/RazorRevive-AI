@@ -83,8 +83,8 @@ describe('GuardrailEngine Unit Tests', () => {
       id: 'case-1',
       payment: { status: 'FAILED', amount: 500 },
       recoveryActions: [
-        { actionType: 'RETRY', status: 'COMPLETED' },
-        { actionType: 'RETRY', status: 'FAILED' }
+        { actionType: 'RETRY', status: 'COMPLETED', executedAt: new Date(Date.now() - 40 * 60 * 1000) },
+        { actionType: 'RETRY', status: 'FAILED', executedAt: new Date(Date.now() - 35 * 60 * 1000) }
       ]
     });
 
@@ -99,6 +99,7 @@ describe('GuardrailEngine Unit Tests', () => {
     const result = await guardrailEngine.evaluateAction('case-1', decision);
     expect(result.status).toBe('BLOCKED');
     expect(result.rulesChecked['RETRY_LIMIT']).toBe('FAIL');
+    expect(result.reason).toContain('Human review/escalation is required');
   });
 
   it('allows valid RETRY', async () => {
@@ -106,7 +107,7 @@ describe('GuardrailEngine Unit Tests', () => {
       id: 'case-1',
       payment: { status: 'FAILED', amount: 500 },
       recoveryActions: [
-        { actionType: 'RETRY', status: 'COMPLETED' }
+        { actionType: 'RETRY', status: 'COMPLETED', executedAt: new Date(Date.now() - 40 * 60 * 1000) }
       ]
     });
 
@@ -122,5 +123,52 @@ describe('GuardrailEngine Unit Tests', () => {
     expect(result.status).toBe('ALLOWED');
     expect(result.rulesChecked['RETRY_LIMIT']).toBe('PASS');
     expect(result.rulesChecked['DUPLICATE_CHECK']).toBe('PASS');
+  });
+
+  it('blocks actions during cooldown period', async () => {
+    mockPrisma.recoveryCase.findUnique.mockResolvedValue({
+      id: 'case-1',
+      payment: { status: 'FAILED', amount: 500 },
+      recoveryActions: [
+        { actionType: 'RETRY', status: 'COMPLETED', executedAt: new Date(Date.now() - 10 * 60 * 1000) }
+      ]
+    });
+
+    const decision: AiDecisionResult = {
+      recommendedAction: 'RETRY',
+      rootCause: 'test',
+      recoverability: 'HIGH',
+      confidence: 1,
+      reason: ''
+    };
+
+    const result = await guardrailEngine.evaluateAction('case-1', decision);
+    expect(result.status).toBe('BLOCKED');
+    expect(result.rulesChecked['COOLDOWN_CHECK']).toBe('FAIL');
+  });
+
+  it('maximum failures result in human-review escalation', async () => {
+    mockPrisma.recoveryCase.findUnique.mockResolvedValue({
+      id: 'case-1',
+      payment: { status: 'FAILED', amount: 500 },
+      recoveryActions: [
+        { actionType: 'PAYMENT_LINK', status: 'FAILED', executedAt: new Date(Date.now() - 60 * 60 * 1000) },
+        { actionType: 'RETRY', status: 'FAILED', executedAt: new Date(Date.now() - 50 * 60 * 1000) },
+        { actionType: 'REMINDER', status: 'FAILED', executedAt: new Date(Date.now() - 40 * 60 * 1000) }
+      ]
+    });
+
+    const decision: AiDecisionResult = {
+      recommendedAction: 'RETRY',
+      rootCause: 'test',
+      recoverability: 'HIGH',
+      confidence: 1,
+      reason: ''
+    };
+
+    const result = await guardrailEngine.evaluateAction('case-1', decision);
+    expect(result.status).toBe('BLOCKED');
+    expect(result.rulesChecked['FAILURE_LIMIT']).toBe('FAIL');
+    expect(result.reason).toContain('Human review/escalation is required');
   });
 });
