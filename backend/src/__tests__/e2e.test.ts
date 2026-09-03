@@ -105,13 +105,13 @@ describe('End-to-End Recovery Integration', () => {
 
   it('9. Idempotent repeated analysis execution (Idempotency)', async () => {
     const aiDecisionBefore = await prisma.aiDecision.findMany({ where: { recoveryCaseId } });
-    
+
     const res = await request(app).post(`/api/recovery/analyze/${recoveryCaseId}`);
     // The system should probably return success but not create duplicate records
     expect(res.status).toBe(200);
 
     const aiDecisionAfter = await prisma.aiDecision.findMany({ where: { recoveryCaseId } });
-    // Assuming idempotency prevents multiple AI decisions, length should remain 1. 
+    // Assuming idempotency prevents multiple AI decisions, length should remain 1.
     // If the system allows re-analysis, it might create a new one. Let's see what the implementation does.
     // Actually, looking at RecoveryEngine, it just runs it. If it runs it again, it might create a duplicate record.
     // Wait, the prompt says "Idempotent repeated recovery execution" for execution, not analysis.
@@ -155,6 +155,23 @@ describe('End-to-End Recovery Integration', () => {
       .send({ idempotencyKey: testIdempotencyKey });
     // Should return 200 success because it matches the previous idempotency key
     expect(res.status).toBe(200);
+
+    // Duplicate execution with a NEW idempotency key should be rejected
+    const duplicateRes = await request(app)
+      .post(`/api/recovery/execute/${recoveryCaseId}`)
+      .send({ idempotencyKey: `new-key-${Date.now()}` });
+
+    expect(duplicateRes.status).toBe(500);
+    expect(duplicateRes.body.error).toContain('Recovery action already executed');
+
+    // Ensure only ONE action and audit log for execution was created
+    const actions = await prisma.recoveryAction.findMany({ where: { recoveryCaseId } });
+    expect(actions.length).toBe(1);
+
+    const execLogs = await prisma.auditLog.findMany({
+      where: { recoveryCaseId, eventType: 'RECOVERY_ACTION_EXECUTED' }
+    });
+    expect(execLogs.length).toBe(1);
   });
 
   it('10. Failed recovery where state and metrics remain correct', async () => {
@@ -171,7 +188,7 @@ describe('End-to-End Recovery Integration', () => {
 
     // Analyze it
     await request(app).post(`/api/recovery/analyze/${failCase.id}`);
-    
+
     // Force guardrail BLOCKED
     await prisma.guardrailEvaluation.updateMany({
       where: { recoveryCaseId: failCase.id },
@@ -183,7 +200,7 @@ describe('End-to-End Recovery Integration', () => {
       .post(`/api/recovery/execute/${failCase.id}`)
       .send({ idempotencyKey: `fail-key-${Date.now()}` });
     expect(res.status).toBe(500); // Because guardrail is blocked
-    
+
     const finalCase = await prisma.recoveryCase.findUnique({ where: { id: failCase.id } });
     // State changes to ESCALATED because the analysis step automatically escalates guardrail-blocked cases.
     expect(finalCase?.status).toBe('ESCALATED');

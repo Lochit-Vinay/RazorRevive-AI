@@ -9,11 +9,12 @@ interface Props {
   aiDecision: any;
   guardrail: any;
   recoveryAction: any;
+  auditLogs?: any[];
   payment: any;
   onRefresh: () => void;
 }
 
-export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, guardrail, recoveryAction, payment, onRefresh }: Props) {
+export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, guardrail, recoveryAction, auditLogs, payment, onRefresh }: Props) {
   const [showPreview, setShowPreview] = useState(false);
   const [showExecute, setShowExecute] = useState(false);
   const [executing, setExecuting] = useState(false);
@@ -22,8 +23,12 @@ export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, gu
   if (!aiDecision) return null;
 
   const isBlocked = guardrail?.status === 'BLOCKED';
-  const isExecuted = !!recoveryAction || (caseStatus !== 'PENDING' && caseStatus !== 'ESCALATED');
-  const canExecute = caseStatus === 'PENDING' && !isBlocked && guardrail?.status === 'ALLOWED' && !recoveryAction;
+
+  const humanApproval = auditLogs?.find((l: any) => l.eventType === 'HUMAN_APPROVED');
+  const hasExecutedCurrentState = recoveryAction && (!humanApproval || new Date(recoveryAction.executedAt) > new Date(humanApproval.createdAt));
+
+  const isExecuted = caseStatus === 'RECOVERED' || caseStatus === 'FAILED' || hasExecutedCurrentState;
+  const canExecute = caseStatus === 'PENDING' && guardrail?.status === 'ALLOWED' && !isExecuted;
 
   const handleExecute = async () => {
     setExecuting(true);
@@ -77,7 +82,7 @@ export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, gu
             </span>
           )}
         </div>
-        
+
         <div className="p-6">
           <div className="mb-6">
             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">Recommended Action</p>
@@ -183,7 +188,7 @@ export default function RecoveryActionPanel({ caseId, caseStatus, aiDecision, gu
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
                 You are about to execute the <strong>{aiDecision.recommendedAction}</strong> action to recover <strong>₹{payment.amount.toLocaleString('en-IN')}</strong> from <strong>{payment.customer.name}</strong>.
               </p>
-              
+
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowExecute(false)}

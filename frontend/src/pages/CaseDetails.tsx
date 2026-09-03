@@ -202,6 +202,7 @@ export default function CaseDetails() {
               aiDecision={ai}
               guardrail={guardrail}
               recoveryAction={data.recoveryActions?.[0]}
+              auditLogs={logs}
               payment={data.payment}
               onRefresh={fetchDetails}
             />

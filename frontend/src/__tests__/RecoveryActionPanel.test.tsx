@@ -60,11 +60,11 @@ describe('RecoveryActionPanel', () => {
     expect(screen.getByText(/Recovery action blocked by deterministic guardrails/i)).toBeInTheDocument();
   });
 
-  it('renders EXECUTED badge and disables execute button when recovery action exists', () => {
+  it('renders EXECUTED badge and disables execute button when case is RECOVERED', () => {
     render(
       <RecoveryActionPanel
         {...defaultProps}
-        recoveryAction={{ id: 'action-123' }}
+        caseStatus="RECOVERED"
       />
     );
     expect(screen.getByText('EXECUTED')).toBeInTheDocument();

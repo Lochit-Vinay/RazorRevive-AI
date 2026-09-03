@@ -149,13 +149,24 @@ export class RecoveryEngine {
 
     if (!recoveryCase) throw new Error('Recovery case not found');
 
-    // Idempotency: prevent duplicate execution if an action is already present
-    if (recoveryCase.recoveryActions.length > 0) {
-      if (providedIdempotencyKey && recoveryCase.recoveryActions[0].idempotencyKey === providedIdempotencyKey) {
-        // Same key means it was already processed successfully and the network just dropped the previous response
-        return;
-      }
-      throw new Error('Recovery action already executed for this case');
+    // Idempotency: prevent duplicate execution of the SAME request
+    if (providedIdempotencyKey) {
+      const existingAction = recoveryCase.recoveryActions.find(a => a.idempotencyKey === providedIdempotencyKey);
+      if (existingAction) return; // Already processed
+    }
+
+    // Determine if we've already executed an action for the CURRENT approved state
+    const humanApproval = await prisma.auditLog.findFirst({
+      where: { recoveryCaseId: caseId, eventType: 'HUMAN_APPROVED' },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const alreadyExecuted = recoveryCase.recoveryActions.some(a => {
+      return humanApproval ? a.executedAt > humanApproval.createdAt : true;
+    });
+
+    if (alreadyExecuted) {
+      throw new Error('Recovery action already executed for this case state');
     }
 
     if (recoveryCase.status !== 'PENDING') throw new Error('Case is not pending');
