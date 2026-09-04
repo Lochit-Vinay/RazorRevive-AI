@@ -12,10 +12,7 @@ services:
       - JWT_SECRET=super_secret_buildathon2026
       - GROQ_API_KEY=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
     volumes:
-      - ./backend/prisma:/app/prisma
-      # This ensures the SQLite database persists across restarts
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend/prisma/dev.db:/app/prisma/dev.db
 
   frontend:
     build:
@@ -24,8 +21,6 @@ services:
       - "5173:5173"
     environment:
       - VITE_API_URL=http://localhost:3001/api
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+
     depends_on:
       - backend
