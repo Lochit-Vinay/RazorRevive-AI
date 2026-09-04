@@ -76,8 +76,8 @@ export default function Login() {
                 <Zap className="w-6 h-6 text-blue-400" />
               </div>
               <div>
-                <p className="text-lg font-bold text-white">Groq-Powered AI Inference</p>
-                <p className="text-sm text-gray-400 mt-1 leading-relaxed">Lightning-fast reasoning engine utilizing Llama-3 models to parse failure contexts and recommend optimal recovery actions.</p>
+                <p className="text-lg font-bold text-white">Intelligent AI Inference</p>
+                <p className="text-sm text-gray-400 mt-1 leading-relaxed">Lightning-fast reasoning engine to parse failure contexts and recommend optimal recovery actions.</p>
               </div>
             </div>
             
