@@ -29,14 +29,24 @@ export const getDashboardMetrics = async (req: Request, res: Response, next: Nex
 
     // Helper to get KPIs for a given period filter
     const getKPIs = async (filter: any) => {
-      const cases = await prisma.recoveryCase.findMany({ where: filter });
+      // For revenue at risk, we look at cases CREATED in this period (cohort)
+      // OR we can just aggregate based on current status.
+      // A more robust metric: 
+      // Revenue at Risk = sum of PENDING/ESCALATED cases created in this period
+      // Revenue Recovered = sum of cases RECOVERED in this period (based on updatedAt)
       
+      const casesCreatedInPeriod = await prisma.recoveryCase.findMany({ where: filter });
+      
+      const recoveredFilter = filter.createdAt ? { updatedAt: filter.createdAt, status: 'RECOVERED' } : { status: 'RECOVERED' };
+      const casesRecoveredInPeriod = await prisma.recoveryCase.findMany({ where: recoveredFilter });
+
       const actionFilter = filter.createdAt ? { executedAt: filter.createdAt } : {};
       const actionsCount = await prisma.recoveryAction.findMany({
         where: actionFilter,
         distinct: ['recoveryCaseId']
       });
-      const escalations = cases.filter(c => c.status === 'ESCALATED').length;
+      
+      const escalations = casesCreatedInPeriod.filter(c => c.status === 'ESCALATED').length;
       
       const guardrailBlocks = await prisma.guardrailEvaluation.findMany({
         where: { ...filter, status: 'BLOCKED' },
@@ -45,15 +55,16 @@ export const getDashboardMetrics = async (req: Request, res: Response, next: Nex
       
       let revenueAtRisk = 0;
       let revenueRecovered = 0;
-      let successfulRecoveries = 0;
+      let successfulRecoveries = casesRecoveredInPeriod.length;
 
-      cases.forEach(c => {
+      casesCreatedInPeriod.forEach(c => {
         if (c.status === 'PENDING' || c.status === 'ESCALATED') {
           revenueAtRisk += c.revenueAtRisk;
-        } else if (c.status === 'RECOVERED') {
-          revenueRecovered += c.revenueAtRisk;
-          successfulRecoveries++;
         }
+      });
+      
+      casesRecoveredInPeriod.forEach(c => {
+        revenueRecovered += c.revenueAtRisk;
       });
 
       const recoveryRate = revenueAtRisk + revenueRecovered > 0 
@@ -105,7 +116,7 @@ export const getDashboardMetrics = async (req: Request, res: Response, next: Nex
 
     // Top Cases (Pending, ordered by amount)
     const topCases = await prisma.recoveryCase.findMany({
-      where: { status: 'PENDING' },
+      where: { status: 'PENDING', ...currentPeriodFilter },
       orderBy: { revenueAtRisk: 'desc' },
       take: 5,
       include: {
@@ -116,6 +127,7 @@ export const getDashboardMetrics = async (req: Request, res: Response, next: Nex
 
     // Recent Activity
     const recentActivity = await prisma.auditLog.findMany({
+      where: currentPeriodFilter,
       orderBy: { createdAt: 'desc' },
       take: 10,
       include: {
