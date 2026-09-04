@@ -104,10 +104,12 @@ export default function Login() {
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className="w-full lg:w-[45%] flex flex-col justify-center items-center p-8 sm:p-12 bg-[#0B1121] relative overflow-hidden">
+      <div className="w-full lg:w-[45%] flex flex-col justify-center items-center p-8 sm:p-12 bg-[#050914] relative overflow-hidden">
         
-        {/* Right Side Glowing Background */}
-        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none"></div>
+        {/* Right Side Immersive Glows */}
+        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none animate-pulse" style={{ animationDelay: '3s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDIiLz4KPHBhdGggZD0iTTAgMEw4IDhaTTAgOEw4IDBaIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+')] opacity-20 pointer-events-none mix-blend-overlay"></div>
 
         {/* Mobile Header (Hidden on Desktop) */}
         <div className="lg:hidden flex flex-col items-center mb-12 relative z-10">
@@ -118,9 +120,12 @@ export default function Login() {
           <h1 className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400">RazorRevive AI</h1>
         </div>
 
-        <div className="w-full max-w-md relative z-10">
-          <div className="bg-gray-800/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-10 shadow-2xl">
-            <div className="text-center lg:text-left mb-10">
+        <div className="w-full max-w-md relative z-20">
+          <div className="bg-gray-900/60 backdrop-blur-3xl border border-gray-700/50 rounded-3xl p-8 sm:p-10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.8)] ring-1 ring-white/5 relative overflow-hidden">
+            {/* Subtle inner highlight */}
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+            
+            <div className="text-center lg:text-left mb-10 relative z-10">
               <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
               <p className="text-gray-400">Sign in to the Admin Dashboard to continue.</p>
             </div>
@@ -152,7 +157,7 @@ export default function Login() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-11 pr-4 py-3.5 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-600 transition-all duration-300 hover:border-gray-600"
+                    className="block w-full pl-11 pr-4 py-3.5 bg-black/40 border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 transition-all duration-300 hover:bg-black/60 hover:border-gray-600 shadow-inner"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -174,7 +179,7 @@ export default function Login() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-11 pr-4 py-3.5 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-600 transition-all duration-300 hover:border-gray-600"
+                    className="block w-full pl-11 pr-4 py-3.5 bg-black/40 border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 transition-all duration-300 hover:bg-black/60 hover:border-gray-600 shadow-inner"
                     placeholder="••••••••"
                   />
                 </div>
@@ -198,20 +203,24 @@ export default function Login() {
                 </a>
               </div>
 
-              <div className="pt-6">
+              <div className="pt-6 relative z-10">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.3)] text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] hover:-translate-y-1"
+                  className="relative group w-full flex justify-center py-4 px-4 rounded-xl text-sm font-bold text-white overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-1"
                 >
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <span className="flex items-center">
-                      Authenticate Securely
-                      <Shield className="ml-2 w-4 h-4" />
-                    </span>
-                  )}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 group-hover:from-blue-500 group-hover:to-indigo-500 transition-colors duration-300"></div>
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/20 to-transparent transition-opacity duration-300"></div>
+                  <div className="relative flex items-center shadow-[0_0_20px_rgba(37,99,235,0.4)] group-hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]">
+                    {isLoading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <span className="flex items-center tracking-wide">
+                        Authenticate Securely
+                        <Shield className="ml-2 w-4 h-4" />
+                      </span>
+                    )}
+                  </div>
                 </button>
               </div>
               
