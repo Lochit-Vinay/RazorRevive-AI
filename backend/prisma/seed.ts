@@ -18,13 +18,18 @@ async function main() {
   console.log(`Created merchant: ${merchant.name}`);
 
   // Create customers
+  const firstNames = ['Aarav', 'Vihaan', 'Aditya', 'Sai', 'Arjun', 'Siddharth', 'Rahul', 'Rohan', 'Amit', 'Neha', 'Pooja', 'Anjali', 'Priya', 'Sneha', 'Riya', 'Kavya', 'Kriti', 'Meera', 'Ravi', 'Vikram'];
+  const lastNames = ['Sharma', 'Verma', 'Patel', 'Reddy', 'Singh', 'Kumar', 'Gupta', 'Desai', 'Joshi', 'Kapoor'];
+  
   const customers = [];
   for (let i = 1; i <= 50; i++) {
+    const first = firstNames[i % firstNames.length];
+    const last = lastNames[i % lastNames.length];
     const customer = await prisma.customer.create({
       data: {
         merchantId: merchant.id,
-        email: `customer${i}@example.com`,
-        name: `Customer ${i}`,
+        email: `${first.toLowerCase()}.${last.toLowerCase()}${i}@razor.com`,
+        name: `${first} ${last} (Token ${i})`,
         lifetimeValue: Math.floor(Math.random() * 50000) + 1000,
         successCount: Math.floor(Math.random() * 10) + 1,
         failureCount: Math.floor(Math.random() * 3),
@@ -102,11 +107,13 @@ async function main() {
 
   for (let i = 0; i < demoScenarios.length; i++) {
     const sc = demoScenarios[i];
+    const first = firstNames[(51 + i) % firstNames.length];
+    const last = lastNames[(51 + i) % lastNames.length];
     const customer = await prisma.customer.create({
       data: {
         merchantId: merchant.id,
-        email: `demo${i+1}@example.com`,
-        name: `Customer ${51 + i}`,
+        email: `${first.toLowerCase()}.${last.toLowerCase()}${51 + i}@razor.com`,
+        name: `${first} ${last} (Token ${51 + i})`,
         lifetimeValue: 100000,
         successCount: 10,
         failureCount: 1,
@@ -133,11 +140,13 @@ async function main() {
   }
 
   // Demo 6 - Sequential / Multiple Cases
+  const first6 = firstNames[56 % firstNames.length];
+  const last6 = lastNames[56 % lastNames.length];
   const customer6 = await prisma.customer.create({
     data: {
       merchantId: merchant.id,
-      email: `demo6@example.com`,
-      name: 'Customer 56',
+      email: `${first6.toLowerCase()}.${last6.toLowerCase()}56@razor.com`,
+      name: `${first6} ${last6} (Token 56)`,
       lifetimeValue: 50000,
       successCount: 5,
       failureCount: 2,
