@@ -96,7 +96,7 @@ export default function AuditLogs() {
               <tr>
                 <th className="px-6 py-4 font-medium">Timestamp</th>
                 <th className="px-6 py-4 font-medium">Action</th>
-                <th className="px-6 py-4 font-medium">Actor</th>
+                <th className="px-6 py-4 font-medium">Triggered By</th>
                 <th className="px-6 py-4 font-medium">Details</th>
               </tr>
             </thead>
