@@ -42,7 +42,7 @@ export default function KPIGrid({ current, previous }: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
       {/* Revenue at Risk */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-between">
+      <div className="bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl shadow-md border border-white/40 dark:border-gray-700/50 p-5 flex flex-col justify-between hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Revenue at Risk</p>
           <div className="p-2 bg-red-50 text-red-600 rounded-lg"><IndianRupee className="w-5 h-5" /></div>
@@ -56,7 +56,7 @@ export default function KPIGrid({ current, previous }: Props) {
       </div>
 
       {/* Revenue Recovered */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-between">
+      <div className="bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl shadow-md border border-white/40 dark:border-gray-700/50 p-5 flex flex-col justify-between hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Revenue Recovered</p>
           <div className="p-2 bg-green-50 text-green-600 rounded-lg"><IndianRupee className="w-5 h-5" /></div>
@@ -70,7 +70,7 @@ export default function KPIGrid({ current, previous }: Props) {
       </div>
 
       {/* Recovery Rate */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-between">
+      <div className="bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl shadow-md border border-white/40 dark:border-gray-700/50 p-5 flex flex-col justify-between hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Recovery Rate</p>
           <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Activity className="w-5 h-5" /></div>
@@ -84,7 +84,7 @@ export default function KPIGrid({ current, previous }: Props) {
       </div>
 
       {/* Recovery Attempts */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-between">
+      <div className="bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl shadow-md border border-white/40 dark:border-gray-700/50 p-5 flex flex-col justify-between hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400" title="Total automated actions executed by the system">Recovery Attempts</p>
           <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><RefreshCcw className="w-5 h-5" /></div>
@@ -98,7 +98,7 @@ export default function KPIGrid({ current, previous }: Props) {
       </div>
 
       {/* Human Escalations */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-between">
+      <div className="bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl shadow-md border border-white/40 dark:border-gray-700/50 p-5 flex flex-col justify-between hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400" title="Cases blocked by Guardrails requiring human review">Escalations</p>
           <div className="p-2 bg-orange-50 text-orange-600 rounded-lg"><AlertCircle className="w-5 h-5" /></div>

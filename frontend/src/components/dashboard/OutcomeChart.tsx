@@ -20,7 +20,7 @@ export default function OutcomeChart({ current }: Props) {
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col h-full">
+    <div className="bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl shadow-md border border-white/40 dark:border-gray-700/50 p-6 flex flex-col h-full hover:shadow-lg transition-all duration-300 group">
       <div className="mb-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recovery Outcome</h3>
         <p className="text-sm text-gray-500 dark:text-gray-400">Distribution of initially at-risk revenue.</p>

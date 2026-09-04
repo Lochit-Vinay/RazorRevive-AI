@@ -9,7 +9,8 @@
 }
 
 body {
-  background-color: #f8fafc;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background-attachment: fixed;
   margin: 0;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -17,7 +18,22 @@ body {
 }
 
 .dark body {
-  background-color: #0f172a;
+  background: radial-gradient(circle at 50% 0%, #0a0f25 0%, #050814 100%);
+  background-attachment: fixed;
+  color: #e2e8f0;
+}
+
+/* Subtle background glow effect for dark mode */
+.dark body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, rgba(51, 133, 255, 0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 @layer utilities {
