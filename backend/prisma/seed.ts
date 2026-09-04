@@ -1,9 +1,22 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding database...');
+
+  // Create default admin user
+  const adminPasswordHash = await bcrypt.hash('buildathon2026', 10);
+  await prisma.admin.upsert({
+    where: { email: 'admin@razor.com' },
+    update: { passwordHash: adminPasswordHash },
+    create: {
+      email: 'admin@razor.com',
+      passwordHash: adminPasswordHash
+    }
+  });
+  console.log('Created default admin: admin@razor.com');
 
   // Create a default merchant
   const merchant = await prisma.merchant.upsert({

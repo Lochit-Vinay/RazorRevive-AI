@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dashboardRoutes from './routes/dashboard.routes';
 import recoveryRoutes from './routes/recovery.routes';
+import authRoutes from './routes/auth.routes';
+import { authenticateToken } from './middleware/auth.middleware';
 import { errorHandler } from './middleware/errorHandler';
 import { prisma } from './db';
 
@@ -30,8 +32,9 @@ app.use('/api', limiter);
 
 app.use(express.json());
 
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/recovery', recoveryRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', authenticateToken, dashboardRoutes);
+app.use('/api/recovery', authenticateToken, recoveryRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });

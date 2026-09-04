@@ -6,12 +6,29 @@ import CaseDetails from './pages/CaseDetails';
 import Performance from './pages/Performance';
 import AuditLogs from './pages/AuditLogs';
 import SettingsPage from './pages/Settings';
-import { LayoutDashboard, AlertTriangle, Moon, Sun, Settings, BarChart3, FileText, Bell, Users, Zap } from 'lucide-react';
+import { LayoutDashboard, AlertTriangle, Moon, Sun, Settings, BarChart3, FileText, Bell, Users, Zap, LogOut } from 'lucide-react';
 import { ToastProvider } from './components/ui/ToastContext';
 import { ThemeProvider, useTheme } from './components/ui/ThemeContext';
+import { AuthProvider, useAuth } from './components/ui/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom';
+import Login from './pages/Login';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) return null;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+}
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex font-sans selection:bg-razorpay-primary selection:text-white transition-colors duration-300">
@@ -54,7 +71,7 @@ function Layout({ children }: { children: React.ReactNode }) {
             <span className="font-medium text-sm">Settings</span>
           </Link>
           
-          <div className="pt-4 mt-4 border-t border-white/5">
+          <div className="pt-4 mt-4 border-t border-white/5 space-y-2">
             <button
               onClick={toggleTheme}
               className="flex items-center justify-between px-4 py-3 w-full rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-300 group border border-white/5 bg-black/20"
@@ -62,6 +79,15 @@ function Layout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center space-x-3">
                 {theme === 'dark' ? <Sun className="w-5 h-5 text-gray-400 group-hover:text-yellow-400 transition-colors" /> : <Moon className="w-5 h-5 text-gray-400 group-hover:text-blue-400 transition-colors" />}
                 <span className="font-medium text-sm">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+              </div>
+            </button>
+            <button
+              onClick={logout}
+              className="flex items-center justify-between px-4 py-3 w-full rounded-xl hover:bg-white/10 text-red-400 hover:text-red-300 transition-all duration-300 group border border-white/5 bg-red-500/10"
+            >
+              <div className="flex items-center space-x-3">
+                <LogOut className="w-5 h-5 text-red-400 group-hover:text-red-300 transition-colors" />
+                <span className="font-medium text-sm">Log Out</span>
               </div>
             </button>
           </div>
@@ -81,17 +107,26 @@ function App() {
     <ThemeProvider>
       <ToastProvider>
         <Router>
-          <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/cases" element={<CasesList />} />
-            <Route path="/cases/:id" element={<CaseDetails />} />
-            <Route path="/performance" element={<Performance />} />
-            <Route path="/audit-logs" element={<AuditLogs />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Routes>
-        </Layout>
-      </Router>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="*" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/cases" element={<CasesList />} />
+                      <Route path="/cases/:id" element={<CaseDetails />} />
+                      <Route path="/performance" element={<Performance />} />
+                      <Route path="/audit-logs" element={<AuditLogs />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                    </Routes>
+                  </Layout>
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </AuthProvider>
+        </Router>
       </ToastProvider>
     </ThemeProvider>
   );

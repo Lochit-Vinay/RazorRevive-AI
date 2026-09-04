@@ -122,3 +122,11 @@ model AuditLog {
 
   recoveryCase   RecoveryCase? @relation(fields: [recoveryCaseId], references: [id])
 }
+
+model Admin {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
