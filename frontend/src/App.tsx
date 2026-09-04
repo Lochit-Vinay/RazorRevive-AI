@@ -5,8 +5,6 @@ import CasesList from './pages/CasesList';
 import CaseDetails from './pages/CaseDetails';
 import Performance from './pages/Performance';
 import AuditLogs from './pages/AuditLogs';
-import Integrations from './pages/Integrations';
-import TeamMembers from './pages/TeamMembers';
 import SettingsPage from './pages/Settings';
 import { LayoutDashboard, AlertTriangle, Moon, Sun, Settings, BarChart3, FileText, Bell, Users, Zap } from 'lucide-react';
 import { ToastProvider } from './components/ui/ToastContext';
@@ -37,12 +35,9 @@ function Layout({ children }: { children: React.ReactNode }) {
           <div className="pt-4 pb-2">
             <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Analytics & Data</p>
           </div>
-          <Link to="/performance" className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/10 text-gray-300 hover:text-white transition-all duration-300 group">
-            <div className="flex items-center space-x-3">
-              <BarChart3 className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
-              <span className="font-medium text-sm">Performance</span>
-            </div>
-            <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-bold">PRO</span>
+          <Link to="/performance" className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 text-gray-300 hover:text-white transition-all duration-300 group">
+            <BarChart3 className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
+            <span className="font-medium text-sm">Performance</span>
           </Link>
           <Link to="/audit-logs" className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 text-gray-300 hover:text-white transition-all duration-300 group">
             <FileText className="w-5 h-5 text-gray-400 group-hover:text-purple-400 transition-colors" />
@@ -51,20 +46,12 @@ function Layout({ children }: { children: React.ReactNode }) {
           <div className="pt-4 pb-2">
             <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Configuration</p>
           </div>
-          <Link to="/integrations" className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 text-gray-300 hover:text-white transition-all duration-300 group">
-            <Zap className="w-5 h-5 text-gray-400 group-hover:text-yellow-400 transition-colors" />
-            <span className="font-medium text-sm">Integrations</span>
-          </Link>
-          <Link to="/team" className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 text-gray-300 hover:text-white transition-all duration-300 group">
-            <Users className="w-5 h-5 text-gray-400 group-hover:text-pink-400 transition-colors" />
-            <span className="font-medium text-sm">Team Members</span>
-          </Link>
           <Link to="/settings" className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 text-gray-300 hover:text-white transition-all duration-300 group">
             <Settings className="w-5 h-5 text-gray-400 group-hover:text-gray-200 transition-colors" />
             <span className="font-medium text-sm">Settings</span>
           </Link>
           
-          <div className="mt-auto pt-8">
+          <div className="pt-4 mt-4 border-t border-white/5">
             <button
               onClick={toggleTheme}
               className="flex items-center justify-between px-4 py-3 w-full rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-300 group border border-white/5 bg-black/20"
@@ -98,8 +85,6 @@ function App() {
             <Route path="/cases/:id" element={<CaseDetails />} />
             <Route path="/performance" element={<Performance />} />
             <Route path="/audit-logs" element={<AuditLogs />} />
-            <Route path="/integrations" element={<Integrations />} />
-            <Route path="/team" element={<TeamMembers />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </Layout>

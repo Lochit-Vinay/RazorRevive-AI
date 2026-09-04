@@ -8,7 +8,6 @@ export default function Performance() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Performance Analytics</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Advanced recovery metrics and cohort analysis.</p>
         </div>
-        <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-500 text-xs font-bold border border-blue-500/20">PRO FEATURE</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
