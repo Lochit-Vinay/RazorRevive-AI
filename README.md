@@ -253,7 +253,11 @@ No specific numerical business results are claimed here — the metrics above de
 
 ## 12. Dashboard / Frontend
 
-A React-based operational dashboard visualizes the recovery pipeline and its outputs — surfacing diagnoses, decisions, guardrail outcomes, and recovery metrics in one place. The dashboard reflects the system's existing implemented functionality; it is not extended here beyond what's actually built.
+A React-based operational dashboard visualizes the recovery pipeline and its outputs — surfacing diagnoses, decisions, guardrail outcomes, and recovery metrics in one place. 
+
+Recent enhancements include:
+- **Secure Admin Authentication:** A premium, glassmorphism-styled login portal protected by JWT authentication and encrypted passwords.
+- **Dynamic Performance Analytics:** Real-time data visualization using Recharts. The dashboard aggregates actual database metrics to calculate Win-Back Rates, Churn Risks, Payment Method breakdowns, and AI Confidence Cohort trajectories over time.
 
 ---
 
@@ -267,6 +271,7 @@ The system supports multiple realistic payment/recovery scenarios rather than a 
 
 | Concern | Mechanism |
 |---|---|
+| Admin Access | JWT-based authentication, bcrypt hashed passwords, protected React routes |
 | Input integrity | Zod schema validation at the API boundary |
 | Unsafe AI output | Deterministic guardrail layer |
 | HTTP hardening | Helmet security headers |
@@ -298,11 +303,11 @@ Testing is implemented with **Jest**.
 
 | Layer | Technology |
 |---|---|
-| Frontend | React |
+| Frontend | React, Tailwind CSS, Recharts, Lucide React, Axios |
 | Backend | Node.js, Express.js, TypeScript |
 | Data | Prisma ORM, SQLite (development database) |
+| Security | JSON Web Tokens (JWT), Bcrypt, Zod, Helmet, Express Rate Limit |
 | AI | Groq API integration, deterministic fallback rule engine |
-| Validation & Security | Zod, Helmet, Express Rate Limit, centralized error handling |
 | Testing | Jest |
 | Tooling | npm, Git / GitHub |
 
@@ -316,17 +321,18 @@ No infrastructure beyond what's listed above (e.g., no Postgres, Redis, Kafka, K
 Recovery-Agent/
 ├── backend/
 │   ├── src/
-│   │   ├── controllers/        # recovery.controller.ts, dashboard.controller.ts
-│   │   ├── routes/             # recovery.routes.ts, dashboard.routes.ts
+│   │   ├── controllers/        # auth.controller.ts, recovery.controller.ts, 
+│   │   │                       # dashboard.controller.ts
+│   │   ├── routes/             # auth.routes.ts, recovery.routes.ts, dashboard.routes.ts
 │   │   ├── services/           # ai.service.ts, guardrail.service.ts,
 │   │   │                       # recovery.service.ts, simulation.service.ts
 │   │   ├── validators/         # recovery.validator.ts (Zod schemas)
-│   │   ├── middleware/         # errorHandler.ts
+│   │   ├── middleware/         # errorHandler.ts, auth.middleware.ts
 │   │   ├── __tests__/          # ai.service.test.ts, guardrail.service.test.ts,
 │   │   │                       # e2e.test.ts
 │   │   ├── db.ts
 │   │   └── index.ts            # Express app entrypoint
-│   ├── prisma/                 # schema.prisma, migrations, dev.db (SQLite)
+│   ├── prisma/                 # schema.prisma, seed.ts, migrations, dev.db
 │   ├── jest.config.js
 │   └── package.json
 ├── frontend/
@@ -336,8 +342,9 @@ Recovery-Agent/
 │   │   │   │                   # RecoveryFunnel, FailureReasons, TopCases,
 │   │   │   │                   # RecentActivity, QuickActions
 │   │   │   ├── case/           # RecoveryActionPanel
-│   │   │   └── ui/             # ThemeContext, ToastContext
-│   │   ├── lib/                # api.ts
+│   │   │   └── ui/             # AuthContext.tsx, ThemeContext, ToastContext
+│   │   ├── pages/              # Login.tsx, Dashboard.tsx, Performance.tsx, AuditLogs.tsx
+│   │   ├── lib/                # api.ts (Axios instance with JWT interceptors)
 │   │   └── __tests__/
 │   └── package.json
 ├── docs/
@@ -392,6 +399,7 @@ All routes are mounted under `/api`. A separate `GET /health` endpoint reports s
 
 | Method | Endpoint | Purpose |
 |---|---|---|
+| `POST` | `/api/auth/login` | Authenticate an admin user and issue a JWT token |
 | `GET` | `/api/recovery/cases` | List all recovery cases, each with its latest payment, AI decision, guardrail evaluation, and recovery action |
 | `GET` | `/api/recovery/cases/:id` | Get full details for a single case, including complete decision and audit history |
 | `POST` | `/api/recovery/analyze/:id` | Run the AI Diagnosis + Recovery Decision Engine for a case **without** executing any action (rate-limited: 100 requests / 15 min per IP) |
@@ -399,6 +407,7 @@ All routes are mounted under `/api`. A separate `GET /health` endpoint reports s
 | `POST` | `/api/recovery/cases/:id/approve` | Approve a case that has been escalated for manual review |
 | `POST` | `/api/recovery/simulation/run` | Run a batch simulation across multiple recovery scenarios |
 | `GET` | `/api/dashboard/metrics` | Retrieve aggregated recovery metrics for the dashboard |
+| `GET` | `/api/dashboard/performance` | Retrieve dynamic KPI, payment method aggregation, and cohort analysis metrics for Recharts |
 | `GET` | `/health` | Basic health check |
 
 A global rate limiter (100 requests / 15 min per IP) also applies to all `/api` routes, with the tighter per-route limits above layered on top for the analyze and execute endpoints specifically.
