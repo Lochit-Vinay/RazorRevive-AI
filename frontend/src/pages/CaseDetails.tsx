@@ -70,10 +70,10 @@ export default function CaseDetails() {
           {data.status === 'PENDING' && !guardrail && (
             <button
               onClick={handleAnalyze}
-              disabled={processing || !!ai}
+              disabled={processing || (!!ai && !!guardrail)}
               className="bg-razorpay-primary hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow-sm font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {processing ? 'Processing...' : (ai ? 'Analyzed' : 'Analyze Case')}
+              {processing ? 'Processing...' : (ai && guardrail ? 'Analyzed' : 'Analyze Case')}
             </button>
           )}
           {data.status === 'PENDING' && guardrail?.status === 'BLOCKED' && (
