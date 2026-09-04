@@ -1,6 +1,6 @@
 import { FileText, ShieldAlert, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 
 function timeAgo(dateString: string) {
   const date = new Date(dateString);
@@ -64,7 +64,7 @@ export default function AuditLogs() {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/dashboard/audit-logs');
+        const response = await api.get('/dashboard/audit-logs');
         setLogs(response.data);
       } catch (error) {
         console.error('Failed to fetch audit logs:', error);
