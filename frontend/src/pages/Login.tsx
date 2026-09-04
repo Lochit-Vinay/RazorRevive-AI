@@ -70,21 +70,25 @@ export default function Login() {
           </p>
 
           {/* Floating Feature Cards */}
-          <div className="mt-12 grid grid-cols-2 gap-4">
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl hover:bg-white/10 transition-colors duration-300">
-              <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4">
-                <TrendingUp className="w-5 h-5 text-blue-400" />
+          <div className="mt-12 grid grid-cols-1 gap-4">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl hover:bg-white/10 transition-colors duration-300 flex items-start space-x-4">
+              <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+                <Zap className="w-6 h-6 text-blue-400" />
               </div>
-              <p className="text-2xl font-bold text-white">42.8%</p>
-              <p className="text-sm text-gray-400 mt-1">Average Win-Back Rate</p>
+              <div>
+                <p className="text-lg font-bold text-white">Groq-Powered AI Inference</p>
+                <p className="text-sm text-gray-400 mt-1 leading-relaxed">Lightning-fast reasoning engine utilizing Llama-3 models to parse failure contexts and recommend optimal recovery actions.</p>
+              </div>
             </div>
             
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl hover:bg-white/10 transition-colors duration-300">
-              <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-4">
-                <Zap className="w-5 h-5 text-emerald-400" />
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl hover:bg-white/10 transition-colors duration-300 flex items-start space-x-4">
+              <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center shrink-0">
+                <Shield className="w-6 h-6 text-emerald-400" />
               </div>
-              <p className="text-2xl font-bold text-white">&lt; 200ms</p>
-              <p className="text-sm text-gray-400 mt-1">Decision Engine Latency</p>
+              <div>
+                <p className="text-lg font-bold text-white">Automated Safety Guardrails</p>
+                <p className="text-sm text-gray-400 mt-1 leading-relaxed">Deterministic rule engine ensuring 100% idempotent executions, strict cooldowns, and secure fallback mechanisms.</p>
+              </div>
             </div>
           </div>
         </div>
