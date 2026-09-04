@@ -1,12 +1,45 @@
-import { FileText, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
+import { FileText, ShieldAlert, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function timeAgo(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.round((now.getTime() - date.getTime()) / 1000);
+  const minutes = Math.round(seconds / 60);
+  const hours = Math.round(minutes / 60);
+  const days = Math.round(hours / 24);
+
+  if (seconds < 60) return `${seconds} secs ago`;
+  if (minutes < 60) return `${minutes} mins ago`;
+  if (hours < 24) return `${hours} hours ago`;
+  return `${days} days ago`;
+}
 
 export default function AuditLogs() {
-  const logs = [
-    { id: 'log-1', action: 'Guardrail Override', user: 'System (Cooldown)', time: '2 mins ago', status: 'blocked', desc: 'Blocked duplicate execution for Case #49. 30min cooldown active.' },
-    { id: 'log-2', action: 'Simulation Run', user: 'Lochit Vinay', time: '1 hour ago', status: 'success', desc: 'Triggered batch simulation for 30 mock cases.' },
-    { id: 'log-3', action: 'Recovery Attempt', user: 'RazorRevive Agent', time: '2 hours ago', status: 'success', desc: 'Executed automated email sequence for Case #22.' },
-    { id: 'log-4', action: 'AI Recommendation', user: 'AI Engine', time: '5 hours ago', status: 'info', desc: 'Classified Case #18 as HIGH RISK (Insufficient Funds).' },
-  ];
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/dashboard/audit-logs');
+        setLogs(response.data);
+      } catch (error) {
+        console.error('Failed to fetch audit logs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogs();
+  }, []);
+
+  const getStatusIcon = (eventType: string) => {
+    if (eventType.includes('GUARDRAIL') || eventType.includes('BLOCKED')) return <ShieldAlert className="w-4 h-4 mr-2 text-red-500" />;
+    if (eventType.includes('SUCCESS') || eventType.includes('EXECUTED')) return <CheckCircle className="w-4 h-4 mr-2 text-green-500" />;
+    if (eventType.includes('FAILED')) return <AlertTriangle className="w-4 h-4 mr-2 text-yellow-500" />;
+    return <FileText className="w-4 h-4 mr-2 text-blue-500" />;
+  };
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
@@ -27,24 +60,26 @@ export default function AuditLogs() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {logs.map((log) => (
+              {loading ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-4 text-center text-gray-500">Loading audit logs...</td>
+                </tr>
+              ) : logs.map((log) => (
                 <tr key={log.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400 flex items-center">
-                    <Clock className="w-4 h-4 mr-2" /> {log.time}
+                    <Clock className="w-4 h-4 mr-2" /> {timeAgo(log.createdAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      {log.status === 'blocked' && <ShieldAlert className="w-4 h-4 mr-2 text-red-500" />}
-                      {log.status === 'success' && <CheckCircle className="w-4 h-4 mr-2 text-green-500" />}
-                      {log.status === 'info' && <FileText className="w-4 h-4 mr-2 text-blue-500" />}
-                      <span className="font-medium text-gray-900 dark:text-white">{log.action}</span>
+                      {getStatusIcon(log.eventType)}
+                      <span className="font-medium text-gray-900 dark:text-white">{log.eventType.replace(/_/g, ' ')}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-300">
-                    {log.user}
+                    {log.actor}
                   </td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
-                    {log.desc}
+                    {log.metadata || `Case ID: ${log.recoveryCaseId || 'System'}`}
                   </td>
                 </tr>
               ))}

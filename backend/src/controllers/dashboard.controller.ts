@@ -148,3 +148,18 @@ export const getDashboardMetrics = async (req: Request, res: Response, next: Nex
     next(error);
   }
 };
+
+export const getAuditLogs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const logs = await prisma.auditLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      include: {
+        recoveryCase: { include: { payment: { include: { customer: true } } } }
+      }
+    });
+    res.json(logs);
+  } catch (error) {
+    next(error);
+  }
+};
