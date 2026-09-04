@@ -16,6 +16,47 @@ function timeAgo(dateString: string) {
   return `${days} days ago`;
 }
 
+const renderMetadata = (log: any) => {
+  if (!log.metadata) return <span className="text-gray-500 italic text-xs">System event</span>;
+  try {
+    const data = JSON.parse(log.metadata);
+    
+    // AI Analysis Payload
+    if (data.rootCause) {
+      return (
+        <div className="space-y-1 text-xs">
+          <div><span className="font-semibold text-gray-800 dark:text-gray-300">ROOT CAUSE:</span> <span className="text-blue-600 dark:text-blue-400 font-medium">{data.rootCause.replace(/_/g, ' ')}</span></div>
+          <div><span className="font-semibold text-gray-800 dark:text-gray-300">CONFIDENCE:</span> {Math.round(data.confidence * 100)}% | <span className="font-semibold text-gray-800 dark:text-gray-300">RECOVERABILITY:</span> {data.recoverability}</div>
+          <div><span className="font-semibold text-gray-800 dark:text-gray-300">ACTION:</span> <span className="text-purple-600 dark:text-purple-400 font-medium">{data.recommendedAction}</span></div>
+          <div className="text-gray-500 dark:text-gray-400 italic truncate max-w-sm" title={data.reason}>"{data.reason}"</div>
+        </div>
+      );
+    }
+    
+    // Recovery Action Payload
+    if (data.actionType || data.actionId) {
+      return (
+        <div className="space-y-1 text-xs">
+          {data.actionType && <div><span className="font-semibold text-gray-800 dark:text-gray-300">EXECUTED:</span> <span className="text-green-600 dark:text-green-400 font-medium">{data.actionType}</span></div>}
+          {data.amount && <div><span className="font-semibold text-gray-800 dark:text-gray-300">AMOUNT:</span> ₹{data.amount}</div>}
+          {data.outcome && <div><span className="font-semibold text-gray-800 dark:text-gray-300">OUTCOME:</span> {data.outcome}</div>}
+        </div>
+      );
+    }
+
+    // Generic JSON Fallback
+    return (
+      <div className="space-y-1 text-xs">
+        {Object.entries(data).filter(([k]) => k !== 'id' && k !== 'recoveryCaseId' && k !== 'createdAt' && k !== 'idempotencyKey').map(([k, v]) => (
+          <div key={k}><span className="font-semibold text-gray-800 dark:text-gray-300 uppercase">{k}:</span> {String(v)}</div>
+        ))}
+      </div>
+    );
+  } catch (e) {
+    return <span className="text-xs text-gray-500">{log.metadata}</span>;
+  }
+};
+
 export default function AuditLogs() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,8 +119,8 @@ export default function AuditLogs() {
                   <td className="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-300">
                     {log.actor}
                   </td>
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
-                    {log.metadata || `Case ID: ${log.recoveryCaseId || 'System'}`}
+                  <td className="px-6 py-4">
+                    {renderMetadata(log)}
                   </td>
                 </tr>
               ))}
