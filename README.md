@@ -377,7 +377,7 @@ npm run dev
 
 # Run frontend (separate terminal)
 cd frontend
-npm start
+npm run dev
 
 # Run tests
 cd backend

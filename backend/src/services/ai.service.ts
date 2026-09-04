@@ -1,5 +1,5 @@
 import { prisma } from '../db';
-import axios from 'axios';
+import { Groq } from 'groq-sdk';
 
 export interface AiDecisionResult {
   rootCause: string;
@@ -33,20 +33,20 @@ export class AiDecisionEngine {
     };
 
     try {
-      if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'your_gemini_api_key_here') {
-        console.log('No valid Gemini API key found, using fallback rule engine.');
+      if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'gsk_your_groq_api_key_here') {
+        console.log('No valid Groq API key found, using fallback rule engine.');
         return this.fallbackRuleEngine(context);
       }
       
-      // Abstracted LLM Provider Call (Using Gemini via REST for simplicity)
-      return await this.callGeminiAPI(context);
+      // Abstracted LLM Provider Call (Using Groq API)
+      return await this.callGroqAPI(context);
     } catch (error) {
       console.error('AI provider failed, falling back to rule engine.', error);
       return this.fallbackRuleEngine(context);
     }
   }
 
-  private async callGeminiAPI(context: any): Promise<AiDecisionResult> {
+  private async callGroqAPI(context: any): Promise<AiDecisionResult> {
     const prompt = `
       You are an AI Payment Revenue Recovery Agent. Analyze this failed payment context and recommend a recovery action.
       Context: ${JSON.stringify(context)}
@@ -61,18 +61,21 @@ export class AiDecisionEngine {
       }
     `;
 
-    const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.2,
-          responseMimeType: "application/json"
-        }
-      }
-    );
+    const groq = new Groq();
 
-    const rawText = response.data.candidates[0].content.parts[0].text;
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      model: "openai/gpt-oss-120b",
+      temperature: 0.2,
+      response_format: { type: 'json_object' }
+    });
+
+    const rawText = chatCompletion.choices[0]?.message?.content || '{}';
     const result = JSON.parse(rawText) as AiDecisionResult;
     return result;
   }

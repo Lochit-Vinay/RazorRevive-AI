@@ -19,9 +19,12 @@ function Layout({ children }: { children: React.ReactNode }) {
       <div className="w-64 bg-gradient-to-b from-gray-900/95 to-[#02042b]/95 backdrop-blur-xl text-white shadow-2xl flex flex-col z-10 border-r border-white/5 relative overflow-hidden">
         {/* Subtle decorative glow */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-blue-500/10 blur-[50px] -z-10 pointer-events-none"></div>
-        <div className="p-6 border-b border-white/10">
-          <h1 className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">RazorRevive AI</h1>
-          <p className="text-xs text-gray-400 mt-1.5 font-medium tracking-wide uppercase">Razorpay Buildathon 2026</p>
+        <div className="px-5 py-6 border-b border-white/10 flex items-center space-x-3">
+          <img src="/logo.png" alt="Project Logo" className="w-12 h-12 object-contain rounded-xl shadow-lg shrink-0" />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 whitespace-nowrap truncate">RazorRevive AI</h1>
+            <p className="text-[9px] text-gray-400 mt-0.5 font-medium tracking-wider uppercase leading-tight truncate">Razorpay Buildathon</p>
+          </div>
         </div>
         <nav className="flex-1 p-4 space-y-1.5">
           <Link to="/" className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 text-gray-300 hover:text-white transition-all duration-300 group hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">

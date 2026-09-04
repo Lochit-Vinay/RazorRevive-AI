@@ -60,7 +60,7 @@ async function main() {
 
   let failedCount = 0;
   for (let i = 0; i < 50; i++) {
-    const customer = customers[Math.floor(Math.random() * customers.length)];
+    const customer = customers[i];
     const amount = Math.floor(Math.random() * 10000) + 500;
     const reason = failureReasons[Math.floor(Math.random() * failureReasons.length)];
 
@@ -106,7 +106,7 @@ async function main() {
       data: {
         merchantId: merchant.id,
         email: `demo${i+1}@example.com`,
-        name: sc.name,
+        name: `Customer ${51 + i}`,
         lifetimeValue: 100000,
         successCount: 10,
         failureCount: 1,
@@ -137,7 +137,7 @@ async function main() {
     data: {
       merchantId: merchant.id,
       email: `demo6@example.com`,
-      name: 'Demo 6 - Sequential Recoveries',
+      name: 'Customer 56',
       lifetimeValue: 50000,
       successCount: 5,
       failureCount: 2,
