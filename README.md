@@ -9,7 +9,7 @@
 ![Status](https://img.shields.io/badge/status-buildathon%20prototype-blue)
 ![Backend](https://img.shields.io/badge/backend-Node.js%20%2B%20Express-339933)
 ![Language](https://img.shields.io/badge/language-TypeScript-3178C6)
-![AI](https://img.shields.io/badge/AI-Gemini%20%2B%20Deterministic%20Fallback-8E44AD)
+![AI](https://img.shields.io/badge/AI-Groq%20%2B%20Deterministic%20Fallback-8E44AD)
 ![Tests](https://img.shields.io/badge/tests-19%20passing%20%2F%203%20suites-brightgreen)
 ![License](https://img.shields.io/badge/license-Buildathon%20Prototype-lightgrey)
 
@@ -120,7 +120,7 @@ flowchart LR
         DB[(SQLite via Prisma)]
     end
     subgraph External
-        GEM[Gemini API]
+        GROQ[Groq API]
         FALLBACK[Deterministic Fallback Rule Engine]
     end
 
@@ -165,7 +165,7 @@ The AI Diagnosis Engine takes structured payment/recovery context (failure reaso
 
 Important boundary: the AI diagnoses and recommends. It does **not** have direct control over whether a payment action is executed — that authority sits entirely with the downstream guardrail and execution layers. The AI's output is treated as an untrusted recommendation, not an instruction.
 
-When the underlying Gemini API key is unavailable, the engine degrades gracefully to a **deterministic fallback rule engine**, so diagnosis capability doesn't disappear when the LLM dependency is absent — it becomes rule-based instead.
+When the underlying Groq API key is unavailable, the engine degrades gracefully to a **deterministic fallback rule engine**, so diagnosis capability doesn't disappear when the LLM dependency is absent — it becomes rule-based instead.
 
 ---
 
@@ -272,7 +272,7 @@ The system supports multiple realistic payment/recovery scenarios rather than a 
 | HTTP hardening | Helmet security headers |
 | Abuse prevention | Express Rate Limit |
 | Failure handling | Centralized error handling middleware |
-| AI unavailability | Deterministic fallback rule engine when Gemini API key is absent |
+| AI unavailability | Deterministic fallback rule engine when Groq API key is absent |
 
 The system is a hardened buildathon prototype — it is **not** claimed to be production-ready or 100% reliable. Phase 12 was specifically about closing gaps in input handling, error handling, and test coverage.
 
@@ -301,12 +301,12 @@ Testing is implemented with **Jest**.
 | Frontend | React |
 | Backend | Node.js, Express.js, TypeScript |
 | Data | Prisma ORM, SQLite (development database) |
-| AI | Gemini API integration, deterministic fallback rule engine |
+| AI | Groq API integration, deterministic fallback rule engine |
 | Validation & Security | Zod, Helmet, Express Rate Limit, centralized error handling |
 | Testing | Jest |
 | Tooling | npm, Git / GitHub |
 
-No infrastructure beyond what's listed above (e.g., no Postgres, Redis, Kafka, Kubernetes, LangChain, vector databases, or third-party LLM providers other than Gemini) is used in this build.
+No infrastructure beyond what's listed above (e.g., no Postgres, Redis, Kafka, Kubernetes, LangChain, vector databases, or third-party LLM providers other than Groq) is used in this build.
 
 ---
 
@@ -364,7 +364,7 @@ cd ../frontend
 npm install
 ```
 
-Set up environment variables for the backend (e.g. `GEMINI_API_KEY`, database URL). If `GEMINI_API_KEY` is not provided, the AI Diagnosis Engine automatically falls back to its deterministic rule engine.
+Set up environment variables for the backend (e.g. `GROQ_API_KEY`, database URL). If `GROQ_API_KEY` is not provided, the AI Diagnosis Engine automatically falls back to its deterministic rule engine.
 
 ---
 
@@ -409,7 +409,7 @@ A global rate limiter (100 requests / 15 min per IP) also applies to all `/api` 
 
 1. A payment fails with a specific failure reason code.
 2. The backend validates the incoming payload (Zod). Malformed input is rejected with `400` before reaching business logic.
-3. The AI Diagnosis Engine (Gemini, or the fallback rule engine if unavailable) analyzes the context and produces a diagnosis.
+3. The AI Diagnosis Engine (Groq, or the fallback rule engine if unavailable) analyzes the context and produces a diagnosis.
 4. The Recovery Decision Engine turns that diagnosis into a candidate recovery action.
 5. The Deterministic Guardrails layer checks the candidate action against fixed rules and either approves or blocks it.
 6. If approved, the Recovery Execution layer carries out the action; if blocked, no action is taken.
@@ -423,7 +423,7 @@ A global rate limiter (100 requests / 15 min per IP) also applies to all `/api` 
 - **Separate recommendation from authority.** The AI never gets to directly execute a financial action — it only ever recommends.
 - **Guardrails as code, not prompts.** Safety logic lives in testable, deterministic backend code rather than being asked of the model.
 - **Fail closed, not open.** Guardrail rejection means no execution, not a lesser action.
-- **Degrade gracefully.** The system keeps functioning (via the fallback rule engine) even without access to the Gemini API.
+- **Degrade gracefully.** The system keeps functioning (via the fallback rule engine) even without access to the Groq API.
 - **Audit everything that matters.** Every stage of the pipeline is logged, not just the final outcome.
 - **Optimize for legitimate recovered revenue, not retry count.** Metrics are structured around outcomes, not activity volume.
 
