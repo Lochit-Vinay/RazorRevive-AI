@@ -24,7 +24,7 @@ async function main() {
   const customers = [];
   for (let i = 1; i <= 50; i++) {
     const first = firstNames[i % firstNames.length];
-    const last = lastNames[i % lastNames.length];
+    const last = lastNames[Math.floor(i / firstNames.length) % lastNames.length];
     const customer = await prisma.customer.create({
       data: {
         merchantId: merchant.id,
@@ -108,7 +108,7 @@ async function main() {
   for (let i = 0; i < demoScenarios.length; i++) {
     const sc = demoScenarios[i];
     const first = firstNames[(51 + i) % firstNames.length];
-    const last = lastNames[(51 + i) % lastNames.length];
+    const last = lastNames[Math.floor((51 + i) / firstNames.length) % lastNames.length];
     const customer = await prisma.customer.create({
       data: {
         merchantId: merchant.id,
@@ -141,7 +141,7 @@ async function main() {
 
   // Demo 6 - Sequential / Multiple Cases
   const first6 = firstNames[56 % firstNames.length];
-  const last6 = lastNames[56 % lastNames.length];
+  const last6 = lastNames[Math.floor(56 / firstNames.length) % lastNames.length];
   const customer6 = await prisma.customer.create({
     data: {
       merchantId: merchant.id,
