@@ -139,7 +139,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-11 pr-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 transition-all duration-300"
-                  placeholder="admin@razor.com"
+                  placeholder="Enter your email"
                 />
               </div>
             </div>
