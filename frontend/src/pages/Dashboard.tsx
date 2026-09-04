@@ -29,6 +29,9 @@ export default function Dashboard() {
       const res = await api.get(`/dashboard/metrics?range=${timeRange}`);
       setMetrics(res.data);
       setLastUpdated(new Date());
+      if (isRefresh) {
+        success('Dashboard Refreshed', 'Latest data has been loaded successfully.');
+      }
     } catch (e: any) {
       console.error(e);
       setError('Failed to load dashboard data. Please try again.');
@@ -37,7 +40,7 @@ export default function Dashboard() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [timeRange]);
+  }, [timeRange, success, showError]);
 
   useEffect(() => {
     setLoading(true);
