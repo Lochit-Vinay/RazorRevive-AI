@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../components/ui/AuthContext';
-import { Shield, Lock, Mail, Loader2, AlertCircle, TrendingUp, CheckCircle2, Zap, BrainCircuit, Activity, Database, Cpu, ArrowRight, BarChart3, Coins, Network, Users } from 'lucide-react';
+import { Shield, Lock, Mail, Loader2, AlertCircle, TrendingUp, CheckCircle2, Zap, BrainCircuit, Activity, Database, Cpu, ArrowRight, ArrowDown, BarChart3, Coins, Network, Users } from 'lucide-react';
 
 function FadeInScroll({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -260,6 +260,18 @@ export default function Login() {
             </form>
           </div>
         </div>
+
+        {/* Scroll Indicator */}
+        <div 
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-60 hover:opacity-100 transition-opacity animate-bounce cursor-pointer z-30"
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+        >
+          <span className="text-gray-400 text-xs tracking-widest uppercase mb-2">Scroll to explore</span>
+          <div className="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center p-1">
+            <div className="w-1 h-2 bg-blue-400 rounded-full animate-ping"></div>
+          </div>
+        </div>
+
       </div>
       </div>
 
