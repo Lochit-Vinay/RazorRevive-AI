@@ -33,6 +33,10 @@
 7. Complete decision chain is recorded
 8. Recovery metrics are reflected on the dashboard
 
+### Test Credentials (Admin Dashboard)
+- **Email:** `admin@razor.com`
+- **Password:** `buildathon2026`
+
 ---
 
 ## 1. Overview
