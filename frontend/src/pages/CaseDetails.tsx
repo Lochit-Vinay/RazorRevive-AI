@@ -237,7 +237,7 @@ export default function CaseDetails() {
                         <h4 className="font-bold text-sm text-gray-900 dark:text-white">{log.eventType.replace(/_/g, ' ')}</h4>
                         <span className="text-xs text-gray-400">{new Date(log.createdAt).toLocaleTimeString()}</span>
                       </div>
-                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 mb-2">Actor: {log.actor}</span>
+                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 mb-2 uppercase">Triggered By: {log.actor}</span>
                       
                       {!showRawJson ? (
                         <div className="mt-2 space-y-2 border-t border-gray-100 dark:border-gray-700 pt-2">
