@@ -477,9 +477,11 @@ The central idea it tries to demonstrate:
 
 <br />
 
+---
+
 <div align="center">
 
-🚀 **Crafted with ❤️ by Lochit Vinay**
+## 🚀 Crafted with ❤️ by **Lochit Vinay**
 
 *Building technology that creates real-world impact.*
 
