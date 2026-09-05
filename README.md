@@ -10,6 +10,7 @@
 ![Backend](https://img.shields.io/badge/backend-Node.js%20%2B%20Express-339933)
 ![Language](https://img.shields.io/badge/language-TypeScript-3178C6)
 ![AI](https://img.shields.io/badge/AI-Groq%20%2B%20Deterministic%20Fallback-8E44AD)
+![Deployment](https://img.shields.io/badge/deployment-Docker-2496ED)
 ![Tests](https://img.shields.io/badge/tests-19%20passing%20%2F%203%20suites-brightgreen)
 ![License](https://img.shields.io/badge/license-Buildathon%20Prototype-lightgrey)
 
