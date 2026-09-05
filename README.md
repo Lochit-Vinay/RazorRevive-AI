@@ -23,7 +23,36 @@
 
 ## Demo
 
-> **[Demo GIF / Screenshots]** — add a short screen recording or 2–3 dashboard screenshots here before submission.
+### Application Gallery
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/1-login.png" alt="Admin Login" width="100%" />
+      <br /><em>Secure Admin Authentication Portal</em>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/2-dashboard-top.png" alt="Dashboard Overview" width="100%" />
+      <br /><em>Revenue Recovery Overview & Metrics</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/4-cases.png" alt="Recovery Cases List" width="100%" />
+      <br /><em>High-level view of all Recovery Cases</em>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/5-case-details.png" alt="Case Details & AI Diagnosis" width="100%" />
+      <br /><em>Detailed Case View with AI Diagnosis & Guardrails</em>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="docs/screenshots/3-dashboard-bottom.png" alt="Audit Trail & Quick Actions" width="80%" />
+      <br /><em>Recent Activity timeline tracking all AI and Human actions</em>
+    </td>
+  </tr>
+</table>
 
 **What the demo shows:**
 
