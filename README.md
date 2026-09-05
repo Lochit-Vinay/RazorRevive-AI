@@ -52,6 +52,32 @@
       <br /><em>Recent Activity timeline tracking all AI and Human actions</em>
     </td>
   </tr>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/6-audit-trail-node.png" alt="Audit Trail Node" width="100%" />
+      <br /><em>Detailed Audit Trail with Glowing Timeline Nodes</em>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/7-performance.png" alt="Performance Analytics" width="100%" />
+      <br /><em>Performance Analytics & Cohort Visualization</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/8-system-logs.png" alt="System Audit Logs" width="100%" />
+      <br /><em>Immutable System Audit Logs</em>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/9-settings.png" alt="Settings Configuration" width="100%" />
+      <br /><em>Agent Behavior & Guardrail Settings</em>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="docs/screenshots/10-light-mode.png" alt="Light Mode Dashboard" width="80%" />
+      <br /><em>Full Light Mode Support (Dashboard Overview)</em>
+    </td>
+  </tr>
 </table>
 
 **What the demo shows:**
