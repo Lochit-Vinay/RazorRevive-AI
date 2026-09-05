@@ -9,7 +9,7 @@ services:
       - PORT=3001
       - DATABASE_URL=file:./dev.db
       - JWT_SECRET=super_secret_buildathon2026
-      - GROQ_API_KEY=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
+      - GROQ_API_KEY=${GROQ_API_KEY}
     volumes:
       - ./backend/prisma/dev.db:/app/prisma/dev.db
 
