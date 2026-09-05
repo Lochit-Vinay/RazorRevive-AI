@@ -13,9 +13,9 @@ export default function TopCases({ cases }: Props) {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-      <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50">
+      <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-transparent">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white">Highest-Value Recovery Opportunities</h3>
-        <Link to="/cases" className="text-sm font-medium text-razorpay-primary hover:text-blue-700">View All</Link>
+        <Link to="/cases" className="text-sm font-medium text-razorpay-primary dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">View All</Link>
       </div>
       
       {cases.length === 0 ? (
