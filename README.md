@@ -474,3 +474,16 @@ This project was built for the Razorpay Buildathon as an exploration of how AI-d
 The central idea it tries to demonstrate:
 
 > **AI decides what is likely to work. Deterministic backend guardrails decide what is allowed. The backend executes only permitted actions. The system records the decision and outcome. Revenue impact is measured.**
+
+<br />
+
+<div align="center">
+
+🚀 **Crafted with ❤️ by Lochit Vinay**
+
+*Building technology that creates real-world impact.*
+
+⭐ **If you found RazorRevive AI useful, consider giving this repository a star!**
+
+</div>
+
