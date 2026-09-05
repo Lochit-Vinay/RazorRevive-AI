@@ -413,7 +413,10 @@ export default function Login() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center space-x-3 mb-4 md:mb-0">
             <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg" />
-            <span className="text-white font-bold tracking-tight">RazorRevive AI</span>
+            <div className="flex flex-col">
+              <span className="text-white font-bold tracking-tight">RazorRevive AI</span>
+              <span className="text-gray-500 text-xs mt-0.5">© 2026 All rights reserved</span>
+            </div>
           </div>
           <div className="text-gray-500 text-sm flex items-center space-x-2">
             <span>Built for the</span>
