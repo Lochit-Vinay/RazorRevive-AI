@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../components/ui/AuthContext';
-import { Shield, Lock, Mail, Loader2, AlertCircle, TrendingUp, CheckCircle2, Zap } from 'lucide-react';
+import { Shield, Lock, Mail, Loader2, AlertCircle, TrendingUp, CheckCircle2, Zap, BrainCircuit, Activity, Database, Cpu, ArrowRight, BarChart3, Coins, Network, Users } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -33,8 +33,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-900 font-sans selection:bg-blue-500 selection:text-white">
+    <div className="flex flex-col bg-gray-900 font-sans selection:bg-blue-500 selection:text-white">
       
+      {/* Hero / Login Section */}
+      <div className="min-h-screen flex w-full">
       {/* Left Panel - Immersive Branding */}
       <div className="hidden lg:flex lg:w-[55%] relative flex-col justify-between overflow-hidden bg-[#02042b] p-12 border-r border-white/5">
         
@@ -231,6 +233,131 @@ export default function Login() {
           </div>
         </div>
       </div>
+      </div>
+
+      {/* WHY AI REVENUE RECOVERY */}
+      <section className="relative z-10 py-24 bg-[#050914] border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-4xl font-black text-white mb-4">Why AI Revenue Recovery?</h2>
+            <p className="text-xl text-gray-400">
+              Revenue loss rarely happens in one clean step. A payment degrades, a checkout gets abandoned, or a subscription fails. 
+              We close the loop from detecting the problem to diagnosing it, choosing the right intervention, and recovering the money.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-colors">
+              <div className="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6">
+                <Activity className="w-7 h-7 text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Payment Degradation</h3>
+              <p className="text-gray-400 leading-relaxed">
+                Detect the root cause of payment failures instantly. Identify whether it's insufficient funds, expired instruments, or bank timeouts.
+              </p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-colors">
+              <div className="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6">
+                <BrainCircuit className="w-7 h-7 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Smart Interventions</h3>
+              <p className="text-gray-400 leading-relaxed">
+                Rather than indiscriminate retries, the AI proposes the optimal recovery path—such as mandate retries, dynamic routing, or tailored messaging.
+              </p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-colors">
+              <div className="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
+                <Coins className="w-7 h-7 text-emerald-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Bounded Recovery</h3>
+              <p className="text-gray-400 leading-relaxed">
+                Recover money safely. All AI recommendations are passed through a deterministic guardrail layer to ensure idempotency and compliance.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS PIPELINE */}
+      <section className="relative z-10 py-24 bg-[#02042b] border-t border-white/5 overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60rem] h-[30rem] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none"></div>
+        
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-4">
+              The Architecture of Recovery
+            </h2>
+            <p className="text-xl text-gray-400">
+              A 4-step pipeline that guarantees safe, automated, and auditable revenue recovery.
+            </p>
+          </div>
+
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-emerald-500/20 -translate-y-1/2 z-0"></div>
+
+            {/* Step 1 */}
+            <div className="relative z-10 flex flex-col items-center text-center max-w-[250px]">
+              <div className="w-20 h-20 bg-gray-900 border-2 border-blue-500/50 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6">
+                <Database className="w-10 h-10 text-blue-400" />
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">1. Input & Validation</h4>
+              <p className="text-sm text-gray-400">Payment failure context is securely ingested and strictly validated via Zod schemas.</p>
+            </div>
+
+            {/* Arrow (Mobile) */}
+            <ArrowRight className="lg:hidden w-8 h-8 text-gray-600 my-4" />
+
+            {/* Step 2 */}
+            <div className="relative z-10 flex flex-col items-center text-center max-w-[250px]">
+              <div className="w-20 h-20 bg-gray-900 border-2 border-purple-500/50 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.3)] mb-6">
+                <BrainCircuit className="w-10 h-10 text-purple-400" />
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">2. AI Diagnosis</h4>
+              <p className="text-sm text-gray-400">Groq-powered inference engine determines the root cause and suggests a recovery vector.</p>
+            </div>
+
+            {/* Arrow (Mobile) */}
+            <ArrowRight className="lg:hidden w-8 h-8 text-gray-600 my-4" />
+
+            {/* Step 3 */}
+            <div className="relative z-10 flex flex-col items-center text-center max-w-[250px]">
+              <div className="w-20 h-20 bg-gray-900 border-2 border-emerald-500/50 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.3)] mb-6">
+                <Shield className="w-10 h-10 text-emerald-400" />
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">3. Guardrails</h4>
+              <p className="text-sm text-gray-400">Rules evaluate the AI's suggestion against safety policies, cooldowns, and idempotency locks.</p>
+            </div>
+
+            {/* Arrow (Mobile) */}
+            <ArrowRight className="lg:hidden w-8 h-8 text-gray-600 my-4" />
+
+            {/* Step 4 */}
+            <div className="relative z-10 flex flex-col items-center text-center max-w-[250px]">
+              <div className="w-20 h-20 bg-gray-900 border-2 border-blue-500/50 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6">
+                <Zap className="w-10 h-10 text-blue-400" />
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">4. Safe Execution</h4>
+              <p className="text-sm text-gray-400">Only approved actions are executed, and the entire decision chain is recorded in the Audit Trail.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="bg-[#050914] py-12 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
+          <div className="flex items-center space-x-3 mb-4 md:mb-0">
+            <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg" />
+            <span className="text-white font-bold tracking-tight">RazorRevive AI</span>
+          </div>
+          <div className="text-gray-500 text-sm flex items-center space-x-2">
+            <span>Built for the</span>
+            <span className="text-blue-400 font-bold">Razorpay Buildathon</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
