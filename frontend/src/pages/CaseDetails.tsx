@@ -9,6 +9,7 @@ export default function CaseDetails() {
   const { id } = useParams();
   const [data, setData] = useState<any>(null);
   const [processing, setProcessing] = useState(false);
+  const [showRawJson, setShowRawJson] = useState(false);
 
   const fetchDetails = async () => {
     try {
@@ -210,28 +211,54 @@ export default function CaseDetails() {
 
           {/* Audit Trail */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h3 className="font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-              <ShieldAlert className="w-5 h-5 text-gray-400 mr-2" />
-              Audit Trail
-            </h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-gray-900 dark:text-white flex items-center m-0">
+                <ShieldAlert className="w-5 h-5 text-gray-400 mr-2" />
+                Audit Trail
+              </h3>
+              <button 
+                onClick={() => setShowRawJson(!showRawJson)}
+                className="text-xs font-medium px-3 py-1.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                {showRawJson ? 'View Formatted' : 'View Raw JSON'}
+              </button>
+            </div>
+            
             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
-              {logs.map((log: any) => (
-                <div key={log.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-gray-200 text-gray-500 dark:text-gray-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                    <div className="w-2 h-2 rounded-full bg-gray-50 dark:bg-gray-800/500"></div>
-                  </div>
-                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-lg border border-gray-100 shadow-sm bg-white dark:bg-gray-800">
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-bold text-sm text-gray-900 dark:text-white">{log.eventType.replace(/_/g, ' ')}</h4>
-                      <span className="text-xs text-gray-400">{new Date(log.createdAt).toLocaleTimeString()}</span>
+              {logs.map((log: any) => {
+                const parsedMetadata = JSON.parse(log.metadata || '{}');
+                return (
+                  <div key={log.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-gray-200 text-gray-500 dark:text-gray-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                      <div className="w-2 h-2 rounded-full bg-gray-50 dark:bg-gray-800/500"></div>
                     </div>
-                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 mb-2">Actor: {log.actor}</span>
-                    <pre className="text-[10px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 p-2 rounded border border-gray-100 dark:border-gray-700 overflow-x-auto">
-                      {JSON.stringify(JSON.parse(log.metadata || '{}'), null, 2)}
-                    </pre>
+                    <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-lg border border-gray-100 shadow-sm bg-white dark:bg-gray-800">
+                      <div className="flex justify-between items-start mb-1">
+                        <h4 className="font-bold text-sm text-gray-900 dark:text-white">{log.eventType.replace(/_/g, ' ')}</h4>
+                        <span className="text-xs text-gray-400">{new Date(log.createdAt).toLocaleTimeString()}</span>
+                      </div>
+                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 mb-2">Actor: {log.actor}</span>
+                      
+                      {!showRawJson ? (
+                        <div className="mt-2 space-y-2 border-t border-gray-100 dark:border-gray-700 pt-2">
+                          {Object.entries(parsedMetadata).map(([k, v]) => (
+                            <div key={k} className="flex justify-between text-xs items-start gap-4">
+                              <span className="text-gray-500 dark:text-gray-400 capitalize shrink-0">{k.replace(/([A-Z])/g, ' $1').trim()}</span>
+                              <span className="font-medium text-gray-900 dark:text-white text-right break-words min-w-0">
+                                {typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <pre className="text-[10px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 p-2 rounded border border-gray-100 dark:border-gray-700 overflow-x-auto mt-2">
+                          {JSON.stringify(parsedMetadata, null, 2)}
+                        </pre>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               {logs.length === 0 && <p className="text-sm text-gray-500 dark:text-gray-400 ml-8">No audit logs available yet.</p>}
             </div>
           </div>
