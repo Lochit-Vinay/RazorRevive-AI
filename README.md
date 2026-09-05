@@ -38,6 +38,16 @@
   </tr>
   <tr>
     <td width="50%">
+      <img src="docs/screenshots/11-architecture.png" alt="Architecture Overview" width="100%" />
+      <br /><em>The Architecture of Recovery</em>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/12-why-ai.png" alt="Why AI Revenue Recovery" width="100%" />
+      <br /><em>Value Proposition & Core Features</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
       <img src="docs/screenshots/4-cases.png" alt="Recovery Cases List" width="100%" />
       <br /><em>High-level view of all Recovery Cases</em>
     </td>
@@ -76,16 +86,6 @@
     <td colspan="2" align="center">
       <img src="docs/screenshots/10-light-mode.png" alt="Light Mode Dashboard" width="80%" />
       <br /><em>Full Light Mode Support (Dashboard Overview)</em>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <img src="docs/screenshots/11-architecture.png" alt="Architecture Overview" width="100%" />
-      <br /><em>The Architecture of Recovery</em>
-    </td>
-    <td width="50%">
-      <img src="docs/screenshots/12-why-ai.png" alt="Why AI Revenue Recovery" width="100%" />
-      <br /><em>Value Proposition & Core Features</em>
     </td>
   </tr>
 </table>
