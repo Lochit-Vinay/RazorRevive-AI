@@ -78,6 +78,16 @@
       <br /><em>Full Light Mode Support (Dashboard Overview)</em>
     </td>
   </tr>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/11-architecture.png" alt="Architecture Overview" width="100%" />
+      <br /><em>The Architecture of Recovery</em>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/12-why-ai.png" alt="Why AI Revenue Recovery" width="100%" />
+      <br /><em>Value Proposition & Core Features</em>
+    </td>
+  </tr>
 </table>
 
 **What the demo shows:**
