@@ -1,6 +1,6 @@
 <div align="center">
 
-# RazorPay AI Revenue Recovery Agent
+# RazorRevive AI Revenue Recovery Agent
 
 **An AI-diagnosed, guardrail-enforced payment recovery system built for the Razorpay Buildathon.**
 
