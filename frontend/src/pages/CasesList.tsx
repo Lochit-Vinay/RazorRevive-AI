@@ -82,7 +82,7 @@ export default function CasesList() {
                     style={{ animationDelay: `${i * 30}ms`, animationFillMode: 'both' }}
                   >
                     <td className="p-4">
-                      <span className="font-mono text-xs text-gray-600 dark:text-gray-400 bg-gray-100/80 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200/50 dark:border-gray-600 shadow-sm">
+                      <span className="font-mono text-xs font-bold tracking-wider text-gray-800 dark:text-gray-100 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded border border-gray-300 dark:border-gray-500 shadow-sm">
                         {c.paymentId.split('-')[0]}
                       </span>
                     </td>
