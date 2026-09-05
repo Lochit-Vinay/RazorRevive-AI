@@ -146,6 +146,7 @@ flowchart LR
     AUD --> DB
     DB --> UI
 ```
+---
 
 ### Request Lifecycle
 
