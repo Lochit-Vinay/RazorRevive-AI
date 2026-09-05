@@ -225,12 +225,21 @@ export default function CaseDetails() {
             </div>
             
             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
-              {logs.map((log: any) => {
+              {logs.map((log: any, index: number) => {
                 const parsedMetadata = JSON.parse(log.metadata || '{}');
+                const isLatest = index === 0;
                 return (
                   <div key={log.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-gray-200 text-gray-500 dark:text-gray-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                      <div className="w-2 h-2 rounded-full bg-gray-50 dark:bg-gray-800/500"></div>
+                    <div className={clsx(
+                      "flex items-center justify-center w-6 h-6 rounded-full border-2 shadow-lg shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10 transition-all duration-300",
+                      isLatest 
+                        ? "border-blue-400 dark:border-blue-500 bg-blue-100 dark:bg-blue-900/40 shadow-[0_0_15px_rgba(59,130,246,0.6)] dark:shadow-[0_0_15px_rgba(59,130,246,0.8)]" 
+                        : "border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-[0_0_10px_rgba(156,163,175,0.5)] dark:shadow-[0_0_10px_rgba(255,255,255,0.15)]"
+                    )}>
+                      <div className={clsx(
+                        "w-2 h-2 rounded-full",
+                        isLatest ? "bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,1)] animate-pulse" : "bg-gray-50 dark:bg-gray-500"
+                      )}></div>
                     </div>
                     <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-lg border border-gray-100 shadow-sm bg-white dark:bg-gray-800">
                       <div className="flex justify-between items-start mb-1">
