@@ -378,6 +378,17 @@ Set up environment variables for the backend (e.g. `GROQ_API_KEY`, database URL)
 
 ## 19. Running the Application
 
+### Option A: Using Docker (Recommended)
+
+The easiest way to run the entire stack is using Docker Compose:
+
+```bash
+docker-compose up --build
+```
+This will start both the frontend (port 5173) and backend (port 3001) simultaneously. 
+
+### Option B: Manual Setup
+
 ```bash
 # Run backend
 cd backend
