@@ -40,7 +40,7 @@ function Layout({ children }: { children: React.ReactNode }) {
           <img src="/logo.png" alt="Project Logo" className="w-12 h-12 object-contain rounded-xl shadow-lg shrink-0" />
           <div className="min-w-0 flex-1">
             <h1 className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 whitespace-nowrap truncate">RazorRevive AI</h1>
-            <p className="text-[9px] text-gray-400 mt-0.5 font-medium tracking-wider uppercase leading-tight truncate">Razorpay Buildathon</p>
+            <p className="text-[9px] text-gray-400 mt-0.5 font-medium tracking-wider uppercase leading-tight truncate">Autonomous Revenue Agent</p>
           </div>
         </div>
         <nav className="flex-1 p-4 space-y-1.5">
