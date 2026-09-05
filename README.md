@@ -147,6 +147,39 @@ flowchart LR
     DB --> UI
 ```
 
+### Request Lifecycle
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Client as Client / Webhook
+    participant API as Backend API
+    participant AI as AI Engine (Groq)
+    participant Rules as Guardrails
+    participant DB as SQLite DB
+
+    Client->>API: POST /api/recovery/analyze
+    API->>API: Validate input (Zod)
+    API->>AI: Send failure context & history
+    AI-->>API: Return diagnosis & recommended action
+    API->>DB: Save AI Decision
+    API-->>Client: 200 OK (Analysis Complete)
+
+    Client->>API: POST /api/recovery/execute
+    API->>Rules: Evaluate AI recommendation
+    
+    alt Action is Permitted
+        Rules-->>API: Status: ALLOWED
+        API->>DB: Execute Action (Idempotent)
+        API->>DB: Write Audit Log (Success)
+        API-->>Client: 200 OK (Action Executed)
+    else Action is Blocked
+        Rules-->>API: Status: BLOCKED
+        API->>DB: Write Audit Log (Blocked)
+        API-->>Client: 403 Forbidden (Blocked by Guardrails)
+    end
+```
+
 ---
 
 ## 5. Detailed System Flow
