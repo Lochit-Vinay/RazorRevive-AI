@@ -33,9 +33,9 @@ export default function OutcomeChart({ current }: Props) {
             <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 13 }} tickFormatter={(val) => `₹${val/1000}k`} />
             <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} hide />
             <Tooltip 
-              cursor={{ fill: '#f9fafb' }} 
+              cursor={{ fill: 'transparent' }} 
               formatter={(val: any) => [formatCurrency(val as number), 'Amount']}
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
             />
             <Legend verticalAlign="top" height={36} iconType="circle" />
             <Bar dataKey="Revenue Recovered" stackId="a" fill="#22c55e" radius={[0, 0, 0, 0]} barSize={60} />
