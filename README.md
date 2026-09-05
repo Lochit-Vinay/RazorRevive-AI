@@ -6,13 +6,18 @@
 
 *The goal isn't to retry more payments. The goal is to recover more legitimate revenue safely.*
 
-![Status](https://img.shields.io/badge/status-buildathon%20prototype-blue)
-![Backend](https://img.shields.io/badge/backend-Node.js%20%2B%20Express-339933)
-![Language](https://img.shields.io/badge/language-TypeScript-3178C6)
-![AI](https://img.shields.io/badge/AI-Groq%20%2B%20Deterministic%20Fallback-8E44AD)
-![Deployment](https://img.shields.io/badge/deployment-Docker-2496ED)
-![Tests](https://img.shields.io/badge/tests-19%20passing%20%2F%203%20suites-brightgreen)
-![License](https://img.shields.io/badge/license-Buildathon%20Prototype-lightgrey)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+
+<br />
+
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Groq AI](https://img.shields.io/badge/Groq%20AI-f55036?style=for-the-badge&logo=groq&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-21%20Passing-brightgreen?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 </div>
 
