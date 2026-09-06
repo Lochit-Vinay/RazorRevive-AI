@@ -15,7 +15,6 @@
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Groq AI](https://img.shields.io/badge/Groq%20AI-f55036?style=for-the-badge&logo=groq&logoColor=white)
 ![Tests](https://img.shields.io/badge/Tests-21%20Passing-brightgreen?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 </div>
 
